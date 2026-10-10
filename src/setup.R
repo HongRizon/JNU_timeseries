@@ -1,0 +1,6 @@
+# R 준비 때 한 번 실행: 두 자료를 ts 객체로 만든다 (U1 자료 읽기 셀과 같은 코드)
+DAT <- read.table("trd.txt", header=TRUE)
+TRD <- ts(DAT[, 1], start = c(1, 1), freq = 7)
+QQ <- read.table("qqq.txt", header=TRUE)
+QQQ <- ts(QQ[, 1], start = c(1999, 4), freq = 12)
+rm(DAT, QQ)
