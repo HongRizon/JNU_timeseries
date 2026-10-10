@@ -126,17 +126,8 @@ par(mfrow=c(1,2))
 plot(trd.wd)
 plot(trd.log)
 """, gw=840, gh=400),
-        p("회귀식의 <code>trd.wd</code>를 <code>log(trd.wd)</code>로 바꾼다. 항을 고르는 방법은 같다."),
-        cell("u7_logfit", "log 모형 적합", """
-fit <- lm(log(trd.wd) ~ time_st + I(time_st^2)
-          +SIN[,1]+SIN[,2]+SIN[,3]
-          +COS[,1]+COS[,2]+COS[,3])     # 반응변수만 log(trd.wd)로
-summary(fit)
-"""),
-        ask("log 변환 뒤 p-value가 0.05보다 작은 항은?",
-            "<code>time_st</code>, <code>I(time_st^2)</code>, <code>SIN[,1]</code>, <code>SIN[,2]</code>, <code>SIN[,3]</code>, <code>COS[,2]</code>다. "
-            "그래서 주 자료의 잠정모형은 log(X<sub>t</sub>) = β<sub>0</sub> + β<sub>1</sub>t<sub>st</sub> + β<sub>2</sub>t<sub>st</sub>² "
-            "+ a<sub>1</sub>sin2πt + a<sub>2</sub>sin2π2t + a<sub>3</sub>sin2π3t + b<sub>2</sub>cos2π2t + ε<sub>t</sub>이고, U8에서 이 항을 쓴다."),
+        ask("log를 취한 뒤 변동폭은 어떻게 되었나?",
+            "수준이 높았던 앞부분의 큰 변동폭이 줄어 전체 구간의 변동폭이 고르게 된다. 요일 주기의 폭도 수준과 무관하게 비슷해진다."),
         more(
             "λ ≠ 0인 Box-Cox 변환을 해 보면",
             p("λ = 0.5면 (x<sup>0.5</sup> − 1)/0.5다. λ를 바꾸어 세 그림을 나란히 놓고 본다."),
@@ -154,7 +145,25 @@ plot(trd.log)                          # λ = 0: ln x
                 "둘째 그림을 그리는 줄에서 오류가 난다. λ = 0은 셋째 그림(ln x)이 맡는다. "
                 "세 그림 중 이분산성이 가장 줄어든 것은 ln x 쪽이다."),
         ),
-        ref="5장 p.5, p.19–22",
+        ref="5장 p.5, p.19–20",
+    ),
+    slide(
+        "log 모형 적합",
+        p("회귀식의 <code>trd.wd</code>를 <code>log(trd.wd)</code>로 바꾼다. 항을 고르는 방법은 같다. "
+          "p-value가 0.05보다 작은 항을 남긴 것이 주 자료의 잠정모형이다."),
+        ask("log 변환 전에 남은 항 다섯 개는 그대로 남을까?"),
+        cell("u7_logfit", "log 모형 적합", """
+fit <- lm(log(trd.wd) ~ time_st + I(time_st^2)
+          +SIN[,1]+SIN[,2]+SIN[,3]
+          +COS[,1]+COS[,2]+COS[,3])     # 반응변수만 log(trd.wd)로
+summary(fit)
+"""),
+        ask("log 변환 뒤 p-value가 0.05보다 작은 항은?",
+            "<code>time_st</code>, <code>I(time_st^2)</code>, <code>SIN[,1]</code>, <code>SIN[,2]</code>, <code>SIN[,3]</code>, <code>COS[,2]</code>다. "
+            "<code>SIN[,2]</code>가 새로 들어온다. "
+            "그래서 주 자료의 잠정모형은 log(X<sub>t</sub>) = β<sub>0</sub> + β<sub>1</sub>t<sub>st</sub> + β<sub>2</sub>t<sub>st</sub>² "
+            "+ a<sub>1</sub>sin2πt + a<sub>2</sub>sin2π2t + a<sub>3</sub>sin2π3t + b<sub>2</sub>cos2π2t + ε<sub>t</sub>이고, U8에서 이 항을 쓴다."),
+        ref="5장 p.21–22",
     ),
 
     # ------------------------------------------------------------ 6. 대조: QQQ

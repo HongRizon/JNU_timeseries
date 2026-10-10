@@ -65,39 +65,46 @@ plot(TRD, xlab="Time/weeks", ylab="BTC 거래 횟수")
     slide(
         "단순지수평활",
         p("단순지수평활법의 모형은 X<sub>t</sub> = 수준<sub>t</sub> + w<sub>t</sub>다. "
-          "수준<sub>t</sub>는 U2 분해법의 추세 m<sub>t</sub>에 해당한다. "
-          "평활법에서 추세라 부르는 것(Holt-Winters 방법의 b<sub>t</sub>)은 분해법의 추세 자체가 아니라 그 국소적 기울기다. "
-          "w<sub>t</sub>는 불규칙 성분이고, 수준은 시간에 따라 바뀔 수 있지만 한 방향으로 증가하거나 감소하는 체계적인 기울기는 없다. "
+          "수준<sub>t</sub>는 U2 분해법의 추세 m<sub>t</sub>에 해당하고, w<sub>t</sub>는 불규칙 성분이다. "
+          "수준은 시간에 따라 바뀔 수 있지만 한 방향으로 증가하거나 감소하는 체계적인 기울기는 없다. "
           "t 시점까지의 자료로 구한 X<sub>t+1</sub> 수준의 추정치 a<sub>t</sub>는 "
-          "a<sub>t</sub> = αX<sub>t</sub> + (1 − α)a<sub>t−1</sub>로 갱신한다 (0 &lt; α &lt; 1, a<sub>1</sub> = X<sub>1</sub>)."),
-        p("이 식을 풀어 쓰면 a<sub>t</sub> = αX<sub>t</sub> + α(1 − α)X<sub>t−1</sub> + α(1 − α)²X<sub>t−2</sub> + ⋯, "
-          "곧 지수가중이동평균(EWMA)이다. 과거 자료일수록 가중치가 지수적으로 줄어든다. "
-          "α ≈ 0이면 평활의 효과가 커서 지엽적인 변화에 둔감하고, α ≈ 1이면 평활의 효과가 작아 민감하다. "
+          "a<sub>t</sub> = αX<sub>t</sub> + (1 − α)a<sub>t−1</sub>로 갱신한다 (0 &lt; α &lt; 1, a<sub>1</sub> = X<sub>1</sub>). "
           "α는 예측오차 e<sub>t</sub> = X<sub>t</sub> − a<sub>t−1</sub>의 제곱합 Σ<sub>t=2</sub><sup>n</sup> e<sub>t</sub>²가 최소가 되도록 고른다. "
           "<code>HoltWinters()</code>는 이 제곱합을 SSE로 출력한다."),
-        ask("요일 주기가 뚜렷한 주 자료에서 자동으로 고른 α는 0과 1 중 어디에 가까울까? 자동으로 고른 α의 SSE가 α = 0.2의 SSE보다 작을까?"),
+        ask("요일 주기가 뚜렷한 주 자료에서 자동으로 고른 α는 0과 1 중 어디에 가까울까?"),
         cell("u3_ses1", "α를 자동으로 고르기", """
 trd.hw1 <- HoltWinters(TRD, beta=FALSE, gamma=FALSE)   # 추세·계절성 없이 수준만
 trd.hw1
 plot(trd.hw1, main="alpha=0.334")
 trd.hw1$SSE
 """),
+        note("<code>beta=FALSE, gamma=FALSE</code>는 추세(β)와 계절성(γ)을 뺀다는 뜻이다. "
+             "출력 첫 줄의 without trend and without seasonal component가 그것이다."),
+        ask("자동으로 고른 α는 얼마이고, 적합선(빨간 선)은 자료를 얼마나 따라가나?",
+            "약 0.334다. 적합선은 요일 주기의 오르내림을 절반쯤 따라간다. SSE는 약 1.197 × 10<sup>15</sup>다."),
+        ask("주 자료에 단순지수평활이 맞는 방법인가?",
+            "아니다. 단순지수평활은 추세와 계절성이 없을 때 쓴다. 주 자료에는 추세와 요일 주기가 있으므로 맞는 방법은 Holt-Winters다."),
+        ref="3장 p.4, p.6–7, p.9",
+    ),
+    slide(
+        "α를 정해 두기",
+        p("갱신식을 풀어 쓰면 a<sub>t</sub> = αX<sub>t</sub> + α(1 − α)X<sub>t−1</sub> + α(1 − α)²X<sub>t−2</sub> + ⋯, "
+          "곧 지수가중이동평균(EWMA)이다. 과거 자료일수록 가중치가 지수적으로 줄어든다. "
+          "α ≈ 0이면 평활의 효과가 커서 지엽적인 변화에 둔감하고, α ≈ 1이면 평활의 효과가 작아 민감하다. "
+          "α를 직접 정해 적합하고 SSE를 자동 선택과 견준다."),
+        ask("α = 0.2의 SSE는 자동으로 고른 α의 SSE보다 작을까?"),
         cell("u3_ses2", "α를 정해 두기", """
 trd.hw2 <- HoltWinters(TRD, alpha=0.2, beta=FALSE, gamma=FALSE)   # 바꿔 보기: alpha (0.2 → 0.9)
 trd.hw2
 plot(trd.hw2, main="alpha=0.2")
 trd.hw2$SSE
 """),
-        note("<code>beta=FALSE, gamma=FALSE</code>는 추세(β)와 계절성(γ)을 뺀다는 뜻이다. "
-             "출력 첫 줄의 without trend and without seasonal component가 그것이다."),
-        ask("자동으로 고른 α의 SSE가 α = 0.2의 SSE보다 작은가?",
-            "작다. 자동으로 고른 α ≈ 0.334의 SSE는 약 1.197 × 10<sup>15</sup>, α = 0.2의 SSE는 약 1.223 × 10<sup>15</sup>다. "
-            "α는 이 제곱합이 최소가 되도록 고르기 때문이다."),
+        ask("α = 0.2의 SSE는 자동으로 고른 α의 SSE보다 작은가?",
+            "크다. α = 0.2의 SSE는 약 1.223 × 10<sup>15</sup>, 자동으로 고른 α ≈ 0.334의 SSE는 약 1.197 × 10<sup>15</sup>다. "
+            "α는 이 제곱합이 최소가 되도록 고르기 때문에 자동 선택보다 작을 수 없다."),
         ask("<code>alpha</code>를 0.9로 바꾸면 적합선은 어떻게 달라지나?",
             "지엽적인 변화에 더 민감해져 적합선이 자료의 오르내림을 거의 그대로 따라간다. α ≈ 1이면 평활의 효과가 작다. "
             "SSE는 약 1.309 × 10<sup>15</sup>로 더 커진다."),
-        ask("주 자료에 단순지수평활이 맞는 방법인가?",
-            "아니다. 단순지수평활은 추세와 계절성이 없을 때 쓴다. 주 자료에는 추세와 요일 주기가 있으므로 맞는 방법은 Holt-Winters다."),
         more(
             "갱신식을 반복문으로 확인하면",
             p("a<sub>t</sub> = αX<sub>t</sub> + (1 − α)a<sub>t−1</sub>, a<sub>1</sub> = X<sub>1</sub>을 "
@@ -121,7 +128,7 @@ a[364]                                  # trd.hw2 출력의 Coefficients a와 �
             ask("<code>al*TRD[i] + (1-al)*a[i-1]</code>은 식의 어느 부분인가?",
                 "<code>al</code>이 α다. <code>al*TRD[i]</code>가 αX<sub>t</sub>, <code>(1-al)*a[i-1]</code>이 (1 − α)a<sub>t−1</sub>이다."),
         ),
-        ref="3장 p.4–7, p.9–10",
+        ref="3장 p.5–7, p.10",
     ),
 
     # ------------------------------------------------------------ 4. Holt-Winters
@@ -134,25 +141,41 @@ a[364]                                  # trd.hw2 출력의 Coefficients a와 �
           "s<sub>t</sub> = γ(X<sub>t</sub> / a<sub>t</sub>) + (1 − γ)s<sub>t−p</sub>다 (0 &lt; α, β, γ &lt; 1). "
           "주기 p는 주 자료에서 7이다. "
           "a<sub>t</sub>, b<sub>t</sub>, s<sub>t</sub>는 t 시점까지의 자료로 구한 X<sub>t+1</sub>의 수준(level)·추세(slope)·계절성(seasonal)의 추정치다."),
-        ask("단순지수평활과 달리 예측선에 요일 주기가 나타날까?"),
+        ask("단순지수평활과 달리 적합선이 요일 주기를 따라갈까?"),
         cell("u3_hw", "승법 Holt-Winters", """
 trd.hw <- HoltWinters(TRD, seasonal="mult")
 trd.hw
 plot(trd.hw)
 """),
+        ask("출력의 Coefficients a, b, s1–s7은 무엇인가?",
+            "마지막 시점(t = 364)의 수준·추세·계절성 추정치다. 6.725979e+06은 약 673만, 3.281491e-01은 약 0.328이다. "
+            "s1–s7은 다음 7일(월–일)의 예측에 쓰이는 계절성 추정치 s다. "
+            "토(s6 ≈ 0.33)·일(s7 ≈ 0.46)이 평일(약 0.80–0.86)보다 훨씬 작아, 주말의 하락이 여기에 들어 있다."),
+        ref="3장 p.11–13",
+    ),
+    slide(
+        "적합된 성분",
+        p("<code>fitted</code>에는 시점마다 xhat(예측값 X̂), level, trend, season이 들어 있다. "
+          "네 그림을 겹쳐 보면 수준·추세·계절성이 각각 어떻게 갱신되어 왔는지 보인다. 마지막 행은 t = 364의 값이다."),
         cell("u3_hwfit", "적합된 성분", """
 plot(trd.hw$fitted)      # xhat(예측값 X̂)·level·trend·season
 tail(trd.hw$fitted, 1)   # 마지막 행 (t = 364)
 """, gh=640),
+        ask("level, trend, season 그림은 각각 어떻게 움직이나?",
+            "level은 원자료의 수준을 따라 오르내리고(6주째 전후가 높다), trend는 거래 횟수에 비해 아주 작은 값이라 거의 0 근처에 머문다. "
+            "season은 7일마다 같은 모양이 반복되는 비율이고 토·일이 1보다 훨씬 작다."),
+        ref="3장 p.14",
+    ),
+    slide(
+        "2주 앞 예측",
+        p("<code>predict()</code>는 마지막 시점의 a, b, s로 <code>n.ahead</code> 시점 앞까지 예측한다. "
+          "주 자료는 하루가 한 시점이라 2*7은 다음 2주다."),
+        ask("다음 2주의 예측값은 마지막 주의 값과 비슷할까?"),
         cell("u3_hwpred", "2주 앞 예측", """
 trd.predict <- predict(trd.hw, n.ahead=2*7)   # 바꿔 보기: n.ahead (2*7 → 4*7)
 trd.predict
 ts.plot(TRD, trd.predict, lty=1:2)
 """),
-        ask("출력의 Coefficients a, b, s1–s7은 무엇인가?",
-            "마지막 시점(t = 364)의 수준·추세·계절성 추정치다. 6.725979e+06은 약 673만, 3.281491e-01은 약 0.328이다. "
-            "s1–s7은 다음 7일(월–일)의 예측에 쓰이는 계절성 추정치 s다. "
-            "토(s6 ≈ 0.33)·일(s7 ≈ 0.46)이 평일(약 0.80–0.86)보다 훨씬 작아, 주말의 하락이 여기에 들어 있다."),
         ask("다음 2주의 예측값은 마지막 주의 값과 비슷한가?",
             "평일 예측(약 544만–596만)이 마지막 주 평일(약 244만–425만)보다 높다. "
             "마지막 날(2025년 10월 5일 일요일, 약 369만)이 다른 일요일(최근 20주 중앙값 약 145만)보다 훨씬 커서, "
@@ -180,7 +203,7 @@ trd.hw.add$SSE   # 가법
                 "요일 주기의 폭이 수준에 비례하는 주 자료에는 U2에서 본 대로 승법이 맞다. "
                 "SSE도 승법이 약 6.85 × 10<sup>14</sup>, 가법이 약 7.25 × 10<sup>14</sup>로 승법 쪽이 작다."),
         ),
-        ref="3장 p.11–15",
+        ref="3장 p.11, p.15",
     ),
 
     # ------------------------------------------------------------ 5. 정리

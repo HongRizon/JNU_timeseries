@@ -13,6 +13,10 @@ function lsGet(k) { try { return localStorage.getItem(LS + k); } catch (e) { ret
 function lsSet(k, v) { try { localStorage.setItem(LS + k, v); } catch (e) { /* storage off */ } }
 function escH(s) { return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
 function cellEl(id) { return document.getElementById('cell-' + id); }
+function outEl(id) {
+  const slot = document.querySelector(`[data-out="${id}"]`);
+  return slot ? $('.out', slot) : $('.out', cellEl(id));
+}
 function cellTitle(id) {
   const m = CELLS[id];
   const el = cellEl(id);
@@ -39,11 +43,11 @@ function show(i, opts = {}) {
   const tab = $(`[data-unit-tab="${u}"]`);
   if (tab && tab.scrollIntoView) tab.scrollIntoView({ block: 'nearest', inline: 'nearest' });
   const inUnit = slides.filter(x => x.dataset.unit === u);
-  $('#pos').textContent = `${u === 'U0' ? '시작' : u} · ${inUnit.indexOf(s) + 1} / ${inUnit.length}`;
-  $('#bar').style.width = ((cur + 1) / slides.length * 100).toFixed(2) + '%';
+  $('#pos').textContent = `${u === 'U0' ? '시작' : u} · ${inUnit.indexOf(s) + 1} / ${inUnit.length} · 전체 ${cur + 1} / ${slides.length}`;
+  $('#fref').textContent = s.dataset.ref || '';
   $('#btn-prev').disabled = cur === 0;
   $('#btn-next').disabled = cur === slides.length - 1;
-  if (!opts.keepScroll) deckEl.scrollTop = 0;
+  if (!opts.keepScroll) { deckEl.scrollTop = 0; $$('.lcol, .rcol, .sbody.one', s).forEach(x => { x.scrollTop = 0; }); }
   const hash = '#' + s.dataset.key;
   if (location.hash !== hash) { try { history.replaceState(null, '', hash); } catch (e) { /* ignore */ } }
   lsSet('slide', s.dataset.key);
@@ -386,7 +390,7 @@ async function runWithDeps(id) {
     setCellStatus(id, `앞 셀 실행 중: ${cellTitle(d)}`);
     const ok = await runOne(d, { autoFor: id });
     if (!ok) {
-      const out = $('.out', cellEl(id));
+      const out = outEl(id);
       out.innerHTML = `<div class="pre-note">앞 셀 <a data-goto-cell="${d}">${cellTitle(d)}</a>에서 오류가 나서 멈췄습니다. 그 셀의 출력을 확인하세요.</div>`;
       setCellStatus(id, '<span class="err">앞 셀 오류</span>');
       return false;
@@ -400,8 +404,10 @@ async function runOne(id, opts = {}) {
   const m = CELLS[id];
   const el = cellEl(id);
   const code = $('textarea.code', el).value;
-  const out = $('.out', el);
+  const out = outEl(id);
   out.innerHTML = '';
+  const slot = out.closest('.oslot');
+  if (slot) { const h = $('.ohint', slot); if (h) h.hidden = true; }
   if (opts.before && opts.before.length) {
     out.insertAdjacentHTML('beforeend', '<div class="pre-note">먼저 실행한 앞 셀: ' +
       opts.before.map(d => `<a data-goto-cell="${d}">${cellTitle(d)}</a>`).join(' → ') + '</div>');
@@ -441,6 +447,7 @@ async function runOne(id, opts = {}) {
     setStatus('ready', 'R 준비됨');
   }
   const text = renderOutput(out, items, images, m);
+  if (slot && !opts.autoFor) slot.scrollIntoView({ block: 'start' });
   const secs = ((performance.now() - t0) / 1000).toFixed(1);
   setCellStatus(id, ok ? `<span class="okmark">✓</span> 완료 · ${secs}초` : `<span class="err">오류</span> · ${secs}초`);
   if (!ok) addHints(id, out, text, pkgFail);
@@ -565,7 +572,9 @@ async function resetSession() {
       await webR.evalRVoid(DECK_SETUP_R);
     } catch (e) { console.error(e); }
     state.ok = {}; state.ranAt = {}; state.lastWriter = {}; state.writeAt = {};
-    for (const el of $$('.cell')) { $('.out', el).innerHTML = ''; $('.cstatus', el).innerHTML = ''; }
+    for (const el of $$('.out')) el.innerHTML = '';
+    for (const el of $$('.cstatus')) el.innerHTML = '';
+    for (const el of $$('.ohint')) el.hidden = false;
   });
 }
 
@@ -601,6 +610,7 @@ document.addEventListener('click', e => {
   if (t.dataset.unitTab) return show(unitFirst(t.dataset.unitTab));
   if (t.dataset.goto) return show(unitFirst(t.dataset.goto));
   if (t.dataset.gotoCell) { e.preventDefault(); return goToCell(t.dataset.gotoCell); }
+  if (t.dataset.runOut) return requestRun(t.dataset.runOut);
   if (t.dataset.download) return downloadData(t.dataset.download);
   if (t.dataset.action === 'export-notes') return exportNotes();
   if (t.dataset.action === 'preload') return preloadPackages(t);

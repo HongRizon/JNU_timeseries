@@ -415,8 +415,8 @@ class Deck:
                     E.append(f"{uid}: 첫 화면은 kind='opener'여야 함")
                 if u["slides"][-1].get("kind") != "wrap":
                     E.append(f"{uid}: 마지막 화면은 kind='wrap'이어야 함")
-                if len(u["slides"]) > 9:
-                    W.append(f"{uid}: 화면이 {len(u['slides'])}장 (9장 이하를 권함)")
+                if len(u["slides"]) > 12:
+                    W.append(f"{uid}: 화면이 {len(u['slides'])}장 (12장 이하를 권함)")
                 if not u.get("ref"):
                     W.append(f"{uid}: UNIT ref(강의 장)가 비어 있음")
             for s in u["slides"]:
@@ -495,24 +495,54 @@ class Renderer:
         uid = s["unit"]
         u = self.unit_by_id[uid]
         kind = s.get("kind") or ""
-        cls = "slide" + (f" {kind}" if kind else "")
         plain_title = re.sub("<[^>]+>", "", s["title"])
         list_title = ("정리 · " + plain_title) if kind == "wrap" else plain_title
         h2 = (f'<h2><span class="pre">정리 · </span>{inline(s["title"])}</h2>' if kind == "wrap" else f'<h2>{inline(s["title"])}</h2>')
-        parts = [f'<section class="{cls}" id="s-{s["key"]}" data-unit="{uid}" data-key="{s["key"]}" data-title="{esc(list_title)}" hidden>']
+        top_cells = [el for el in s["body"] if el["type"] == "cell"]
+        two = bool(top_cells)
+        cls = "slide" + (f" {kind}" if kind else "") + (" two" if two else " one")
+        ref = f"강의 {s['ref']}" if s.get("ref") else ""
+        parts = [f'<section class="{cls}" id="s-{s["key"]}" data-unit="{uid}" data-key="{s["key"]}" data-title="{esc(list_title)}" data-ref="{esc(ref)}" hidden>']
         if uid == "U0":
             parts.append(f'<header class="shead">{h2}</header>')
         elif kind == "opener":
             parts.append(f'<header class="shead"><div class="sunit">{uid} · {esc(u.get("ref", ""))}</div>{h2}</header>')
         else:
             parts.append(f'<header class="shead"><div class="sunit">{esc(self.unit_label(uid))}</div>{h2}</header>')
-        parts.append('<div class="sbody">')
-        parts.extend(self.element(el, s) for el in s["body"])
-        parts.append("</div>")
-        if s.get("ref"):
-            parts.append(f'<footer class="sfoot">강의 {esc(s["ref"])}</footer>')
+        if two:
+            # 마지막 최상위 셀까지는 왼쪽(설명·예상 질문·코드), 그 뒤는 오른쪽(출력·확인 질문)
+            last = max(i for i, el in enumerate(s["body"]) if el["type"] == "cell")
+            left = s["body"][:last + 1]
+            right = s["body"][last + 1:]
+            parts.append('<div class="sbody two"><div class="lcol">')
+            parts.extend(self.element(el, s) for el in left)
+            parts.append('</div><div class="rcol"><div class="outpane">')
+            parts.extend(self.outslot(c) for c in top_cells)
+            parts.append('</div>')
+            parts.extend(self.element(el, s) for el in right)
+            parts.append('</div></div>')
+        else:
+            parts.append('<div class="sbody one">')
+            # 기록 칸이 잇달아 나오면 두 열로 묶는다
+            i = 0
+            body = s["body"]
+            while i < len(body):
+                if body[i]["type"] == "write":
+                    j = i
+                    while j < len(body) and body[j]["type"] == "write":
+                        j += 1
+                    parts.append('<div class="writegrid">' + "".join(self.element(el, s) for el in body[i:j]) + '</div>')
+                    i = j
+                else:
+                    parts.append(self.element(body[i], s))
+                    i += 1
+            parts.append("</div>")
         parts.append("</section>")
         return "\n".join(parts)
+
+    def outslot(self, c):
+        return (f'<div class="oslot" data-out="{c["id"]}"><div class="olabel">{inline(c["title"])}</div>'
+                f'<div class="ohint">▶ 실행을 누르면 결과가 여기에 나온다.</div><div class="out"></div></div>')
 
     def element(self, el, s, tcount=None):
         t = el["type"]
@@ -536,13 +566,15 @@ class Renderer:
             return f'<details class="more"><summary>{inline(el["summary"])}</summary><div class="morebody">{body}</div></details>'
         if t == "write":
             return (f'<div class="write"><div class="wlabel">{inline(el["label"])}</div><div class="wprompt">{inline(el["prompt"])}</div>'
-                    f'<textarea class="note-input" rows="4" data-key="w:{esc(el["key"])}" data-label="{esc(re.sub("<[^>]+>", "", el["label"]))}" '
+                    f'<textarea class="note-input" rows="3" data-key="w:{esc(el["key"])}" data-label="{esc(re.sub("<[^>]+>", "", el["label"]))}" '
                     f'aria-label="{esc(re.sub("<[^>]+>", "", el["label"]))}"></textarea></div>')
         if t == "flow":
             rights = "".join(f'<div class="fbox">{inline(r)}</div>' for r in el["rights"])
             return f'<div class="flow"><div class="fbox">{inline(el["left"])}</div><div class="farrow">→</div><div class="fcol">{rights}</div></div>'
         if t == "cell":
-            return self.cell(el)
+            # 최상위 셀의 출력은 오른쪽 출력칸으로, 접힌 블록 안의 셀은 셀 안에 그대로
+            inline_out = el not in s["body"]
+            return self.cell(el, inline_out=inline_out)
         raise ValueError(f"알 수 없는 요소 {t}")
 
     def table(self, el, s):
@@ -566,7 +598,7 @@ class Renderer:
         cls = "t" + ("" if el.get("first_bold", True) else " plain")
         return f'<div class="tblwrap"><table class="{cls}"><thead><tr>{head}</tr></thead><tbody>{"".join(rows)}</tbody></table></div>'
 
-    def cell(self, c):
+    def cell(self, c, inline_out=True):
         needs = ""
         if c["needs_all"]:
             links = []
@@ -585,7 +617,7 @@ class Renderer:
             f'<div class="editor"><pre class="hl" aria-hidden="true"></pre>'
             f'<textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="{rows}" '
             f'aria-label="R 코드: {esc(re.sub("<[^>]+>", "", c["title"]))}">{esc(c["code"])}</textarea></div>'
-            f'<div class="cstatus" aria-live="polite"></div><div class="out"></div></div>'
+            f'<div class="cstatus" aria-live="polite"></div>' + ('<div class="out"></div>' if inline_out else '') + '</div>'
         )
 
     def topbar(self):
@@ -601,9 +633,9 @@ class Renderer:
             f'<div class="brand">{TITLE}</div>'
             f'<nav class="units" aria-label="단원">{"".join(tabs)}</nav>'
             '<div class="rstatus" id="rstatus" data-state="loading" role="status" aria-live="polite"><span class="dot"></span><span class="txt">R 준비 중…</span></div>'
-            '<button type="button" class="tbtn" id="btn-help" aria-haspopup="dialog" title="사용법">도움말</button>'
+            '<div class="tools"><button type="button" class="tbtn" id="btn-help" aria-haspopup="dialog" title="사용법">도움말</button>'
             '<button type="button" class="tbtn" id="btn-toc" aria-haspopup="dialog">목록</button>'
-            '<button type="button" class="tbtn" id="btn-reset" title="R 세션의 변수를 모두 지우고 자료만 다시 읽습니다">R 초기화</button>'
+            '<button type="button" class="tbtn" id="btn-reset" title="R 세션의 변수를 모두 지우고 자료만 다시 읽습니다">R 초기화</button></div>'
             '</header>'
         )
 
@@ -662,10 +694,8 @@ class Renderer:
 {slides}
 </main>
 <footer class="navbar">
-  <button type="button" class="nbtn" id="btn-prev">◀ 이전</button>
-  <div class="pos" id="pos"></div>
-  <div class="progress" aria-hidden="true"><div class="bar" id="bar"></div></div>
-  <button type="button" class="nbtn" id="btn-next">다음 ▶</button>
+  <div class="fref" id="fref"></div>
+  <div class="fnav"><span class="pos" id="pos"></span><button type="button" class="nbtn" id="btn-prev" title="이전 (←)">◀</button><button type="button" class="nbtn" id="btn-next" title="다음 (→)">▶</button></div>
 </footer>
 <div id="toc" hidden role="dialog" aria-label="화면 목록"><div class="panel"><button type="button" class="tbtn close" id="btn-toc-close">닫기</button><div id="toc-body"></div></div></div>
 <div id="help" hidden role="dialog" aria-label="사용법"><div class="panel"><button type="button" class="tbtn close" id="btn-help-close">닫기</button>
