@@ -415,6 +415,13 @@ class Deck:
                     E.append(f"{uid}: 첫 화면은 kind='opener'여야 함")
                 if u["slides"][-1].get("kind") != "wrap":
                     E.append(f"{uid}: 마지막 화면은 kind='wrap'이어야 함")
+                elif not any(el["type"] == "ul" for el in u["slides"][-1]["body"]):
+                    E.append(f"{uid}: 정리 화면에는 원리 목록 ul()이 있어야 함")
+                for s_ in u["slides"]:
+                    if s_.get("kind") not in ("opener", "wrap") and sum(1 for el in s_["body"] if el["type"] == "cell") == 0:
+                        W.append(f"{s_['key']}: 셀이 없는 단계 화면")
+                    if sum(1 for el in s_["body"] if el["type"] == "cell") > 1:
+                        W.append(f"{s_['key']}: 최상위 셀이 둘 이상")
                 if len(u["slides"]) > 12:
                     W.append(f"{uid}: 화면이 {len(u['slides'])}장 (12장 이하를 권함)")
                 if not u.get("ref"):
@@ -435,12 +442,14 @@ class Deck:
                                 E.append(f"{where}: {why}: …{t[max(0, m.start() - 25):m.end() + 25]!r}…")
                     if el["type"] == "p" and len(re.sub(r"<[^>]+>", "", el["html"])) > 700:
                         W.append(f"{key}: 문단이 깁니다 ({len(el['html'])}자). 나누거나 줄이세요")
-                    if el["type"] == "ask" and "?" not in el["q"]:
-                        E.append(f"{key}: ask 질문에 물음표가 없음: {el['q'][:40]!r}")
+                    if el["type"] == "ask":
+                        E.append(f"{key}: 질문(ask)은 쓰지 않는다. 코드·출력의 뜻이면 note()로, 자료에서 본 것이면 정리 화면의 원리로: {el['q'][:40]!r}")
                     if el["type"] == "write":
-                        if el["key"] in write_keys:
-                            E.append(f"{key}: write key 중복 {el['key']}")
-                        write_keys.add(el["key"])
+                        E.append(f"{key}: 기록 칸(write)은 쓰지 않는다")
+                    if el["type"] == "table" and any(not isinstance(c, str) for r in el["rows"] for c in r):
+                        E.append(f"{key}: 빈칸(BLANK) 표는 쓰지 않는다")
+                    if el["type"] == "note" and len(re.sub(r"<[^>]+>", "", el["html"])) > 260:
+                        W.append(f"{key}: note가 깁니다 ({len(el['html'])}자). 두 문장 이내로")
                     if el["type"] == "cell":
                         c = el
                         if not re.match(r"^u\d_[a-z0-9_]+$", c["id"]) or not c["id"].startswith(uid.lower() + "_"):
@@ -542,7 +551,7 @@ class Renderer:
 
     def outslot(self, c):
         return (f'<div class="oslot" data-out="{c["id"]}"><div class="olabel">{inline(c["title"])}</div>'
-                f'<div class="ohint">▶ 실행을 누르면 결과가 여기에 나온다.</div><div class="out"></div></div>')
+                f'<div class="ohint">결과</div><div class="out"></div></div>')
 
     def element(self, el, s, tcount=None):
         t = el["type"]
