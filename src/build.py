@@ -106,7 +106,7 @@ def r_analyze(code):
     사용: 함수 호출이 아닌 이름 중 R 예약어·상수·지역 변수가 아니고, 같은 셀에서 먼저 정의되지 않은 것
     """
     toks = [t for t in r_tokens(code) if t[0] != "nl"] if False else r_tokens(code)
-    defs, uses, pkgs, calls = [], [], [], []
+    defs, uses, pkgs, calls, fdefs = [], [], [], [], []
     n = len(toks)
     local_scopes = []          # [set(names), end_mode]  end_mode: ('brace', depth) | ('line',)
     brace_depth = 0
@@ -221,6 +221,9 @@ def r_analyze(code):
                     local_scopes[-1][0].add(val)
                 else:
                     defs.append((val, pos))
+                    k2, v2, _ = nxt(k + 1)
+                    if k2 == "id" and v2 == "function":
+                        fdefs.append(val)
                 k += 1
                 continue
             if pk == "op" and pv == "(" and k >= 2 and toks[k - 2][0] == "id" and toks[k - 2][1] == "for" \
@@ -257,7 +260,7 @@ def r_analyze(code):
             continue
         if name not in call_names and name not in ext_uses:
             call_names.append(name)
-    return def_names, ext_uses, pkgs, call_names
+    return def_names, ext_uses, pkgs, call_names, fdefs
 
 
 # ---------------------------------------------------------------- 내용 불러오기
@@ -345,17 +348,18 @@ class Deck:
                 self.errors.append(f"{c['slide']}: 셀 id 중복 {c['id']}")
             seen[c["id"]] = c
             c["syntax"] = r_check_syntax(c["code"])
-            c["defs"], c["uses"], c["pkgs"], c["calls"] = r_analyze(c["code"])
+            c["defs"], c["uses"], c["pkgs"], c["calls"], c["fdefs"] = r_analyze(c["code"])
         index = {c["id"]: i for i, c in enumerate(self.cells)}
-        all_defs = set()
+        all_fdefs = set()
         for c in self.cells:
             if not c["noprov"]:
-                all_defs.update(c["defs"])
+                all_fdefs.update(c["fdefs"])
         for i, c in enumerate(self.cells):
             prov = {}
             missing = []
-            # 앞 셀이 만든 함수를 부르는 것도 의존이다 (AR(), RW() 등)
-            c["uses"] = list(c["uses"]) + [v for v in c["calls"] if v in all_defs]
+            # 앞 셀이 만든 함수를 부르는 것도 의존이다 (AR(), RW() 등). 함수 정의만 본다:
+            # 변수 time이 있어도 time(x)는 R 함수를 부른다.
+            c["uses"] = list(c["uses"]) + [v for v in c["calls"] if v in all_fdefs]
             for v in c["uses"]:
                 if v in BUILTIN_DATA or v in R_FUNS:
                     continue
