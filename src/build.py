@@ -106,7 +106,7 @@ def r_analyze(code):
     사용: 함수 호출이 아닌 이름 중 R 예약어·상수·지역 변수가 아니고, 같은 셀에서 먼저 정의되지 않은 것
     """
     toks = [t for t in r_tokens(code) if t[0] != "nl"] if False else r_tokens(code)
-    defs, uses, pkgs = [], [], []
+    defs, uses, pkgs, calls = [], [], [], []
     n = len(toks)
     local_scopes = []          # [set(names), end_mode]  end_mode: ('brace', depth) | ('line',)
     brace_depth = 0
@@ -202,7 +202,8 @@ def r_analyze(code):
                 pkgs.append(val)
                 k += 1
                 continue
-            if nk == "op" and nv == "(":           # 함수 호출
+            if nk == "op" and nv == "(":           # 함수 호출 (앞 셀이 만든 함수일 수 있다)
+                calls.append((val, pos))
                 k += 1
                 continue
             if nk == "op" and nv == "=":           # 이름 있는 인자 또는 = 대입
@@ -250,7 +251,13 @@ def r_analyze(code):
     for name, _ in defs:
         if name not in def_names:
             def_names.append(name)
-    return def_names, ext_uses, pkgs
+    call_names = []
+    for name, pos in calls:
+        if name in first_def and first_def[name] < pos:
+            continue
+        if name not in call_names and name not in ext_uses:
+            call_names.append(name)
+    return def_names, ext_uses, pkgs, call_names
 
 
 # ---------------------------------------------------------------- 내용 불러오기
@@ -338,11 +345,17 @@ class Deck:
                 self.errors.append(f"{c['slide']}: 셀 id 중복 {c['id']}")
             seen[c["id"]] = c
             c["syntax"] = r_check_syntax(c["code"])
-            c["defs"], c["uses"], c["pkgs"] = r_analyze(c["code"])
+            c["defs"], c["uses"], c["pkgs"], c["calls"] = r_analyze(c["code"])
         index = {c["id"]: i for i, c in enumerate(self.cells)}
+        all_defs = set()
+        for c in self.cells:
+            if not c["noprov"]:
+                all_defs.update(c["defs"])
         for i, c in enumerate(self.cells):
             prov = {}
             missing = []
+            # 앞 셀이 만든 함수를 부르는 것도 의존이다 (AR(), RW() 등)
+            c["uses"] = list(c["uses"]) + [v for v in c["calls"] if v in all_defs]
             for v in c["uses"]:
                 if v in BUILTIN_DATA or v in R_FUNS:
                     continue
