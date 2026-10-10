@@ -193,6 +193,7 @@ details.more > summary:hover { color: var(--ink); }
 .out:empty { display: none; }
 .cell .out { margin: 0 12px 12px; }
 .out { display: flex; flex-direction: column; gap: 8px; }
+.out .osep { border-top: 1px dashed var(--rule); margin: 4px 0; }
 .out .pre-note { font-size: .8em; color: var(--muted); background: var(--soft); border-radius: 3px; padding: 5px 10px; }
 .out .pre-note a { cursor: pointer; }
 pre.console {
@@ -278,7 +279,7 @@ pre.console {
 <div class="tblwrap"><table class="t"><thead><tr><th>자료</th><th>내용</th><th>R에서</th></tr></thead><tbody><tr><td>주 자료 TRD</td><td>바이낸스 현물 BTCUSDT 일봉의 거래 횟수(number of trades). 2024년 10월 7일(월) ~ 2025년 10월 5일(일), 364일 = 52주. 날짜는 UTC 기준(일봉은 한국시간 오전 9시에 시작).</td><td><code>TRD</code> · 일별, 요일 주기 ⇒ <code>freq=7</code></td></tr><tr><td>대조 자료 QQQ</td><td>나스닥100 ETF QQQ의 월말 종가. 1999년 4월 ~ 2025년 12월, 321개. 2000년 3월 주식분할 전 값은 2로 나눴다.</td><td><code>QQQ</code> · 월별 ⇒ <code>freq=12</code></td></tr></tbody></table></div>
 <p>주 자료에는 추세, 요일 주기, 변동의 증가가 함께 보인다. 대조 자료는 금융 시계열에 흔한 '확률적 추세'를 같은 도구로 판정해 보는 역할이다. U1부터 U8까지 주 자료로 한 바퀴를 돌고, 대조 자료는 U1·U4·U5·U6·U7에서 같은 도구를 돌려 견준다.</p>
 <h3>하는 법</h3>
-<ul><li>페이지를 열면 브라우저 안에서 R을 준비한다 (10–30초, 인터넷 필요). 오른쪽 위가 <b>R 준비됨</b>이 되면 셀을 실행할 수 있다.</li><li>셀의 <b>▶ 실행</b> 단추 또는 코드 상자에서 <kbd>Ctrl</kbd>+<kbd>Enter</kbd>. 결과와 그림은 오른쪽 결과 칸에 나온다.</li><li><code># 바꿔 보기</code>라고 적힌 줄의 값만 바꿔 다시 실행해 본다. ↺ 단추는 코드를 처음 상태로 되돌린다.</li><li><code>TRD</code>와 <code>QQQ</code>는 미리 읽혀 있다. 앞 셀이 만든 변수를 쓰는 셀을 먼저 누르면 앞 셀이 자동으로 먼저 실행된다.</li><li>넘기기: 아래의 ◀ ▶, 키보드 ← →, 위의 단원 단추. 자세한 사용법과 자료 파일 받기는 위의 <b>도움말</b>.</li></ul>
+<ul><li>페이지를 열면 브라우저 안에서 R을 준비한다 (10–30초, 인터넷 필요). 오른쪽 위가 <b>R 준비됨</b>이 되면 셀을 실행할 수 있다.</li><li>셀의 <b>▶ 실행</b> 단추는 셀 전체를 실행한다. 결과와 그림은 오른쪽 결과 칸에 나온다.</li><li>RStudio처럼 코드 상자에서 드래그해 고른 부분만, 또는 커서가 있는 줄만 <kbd>Ctrl</kbd>+<kbd>Enter</kbd>로 실행할 수 있다. 셀 전체는 <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Enter</kbd>.</li><li><code># 바꿔 보기</code>라고 적힌 줄의 값만 바꿔 다시 실행해 본다. ↺ 단추는 코드를 처음 상태로 되돌린다.</li><li><code>TRD</code>와 <code>QQQ</code>는 미리 읽혀 있다. 앞 셀이 만든 변수를 쓰는 셀을 먼저 누르면 앞 셀이 자동으로 먼저 실행된다.</li><li>넘기기: 아래의 ◀ ▶, 키보드 ← →, 위의 단원 단추. 자세한 사용법과 자료 파일 받기는 위의 <b>도움말</b>.</li></ul>
 <div class="actions"><button type="button" class="btn" data-action="preload">R 패키지 미리 받기 (tseries · forecast · nlme)</button><span class="actions-note" data-preload-status>U4·U6·U8에서 쓴다. 지금 받아 두면 그때 기다리지 않는다.</span></div>
 </div>
 </section>
@@ -295,7 +296,7 @@ pre.console {
 <div class="sbody two"><div class="lcol">
 <p><code>TRD</code>와 <code>QQQ</code>는 R을 준비할 때 미리 만들어져 있다. 파일을 <code>read.table()</code>로 읽고 <code>ts()</code>로 시간정보를 주어 만든 것이다.</p>
 <p><code>read.table()</code>로 읽은 자료의 class는 "data.frame"이고 시간정보가 없다. <code>ts()</code>로 시간정보를 주면 class가 "ts"가 된다. <code>frequency</code>는 계절주기의 길이라서, 요일 주기가 있는 주 자료는 7이고 월별 자료 QQQ는 12다.</p>
-<div class="cell" id="cell-u1_read" data-cell="u1_read"><div class="chead"><span class="ctitle">TRD와 QQQ 만들기</span><span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="9" aria-label="R 코드: TRD와 QQQ 만들기">DAT &lt;- read.table(&quot;trd.txt&quot;, header=T)   # header=T: 첫 줄은 열 이름
+<div class="cell" id="cell-u1_read" data-cell="u1_read"><div class="chead"><span class="ctitle">TRD와 QQQ 만들기</span><span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="9" aria-label="R 코드: TRD와 QQQ 만들기">DAT &lt;- read.table(&quot;trd.txt&quot;, header=T)   # header=T: 첫 줄은 열 이름
 DAT[1:3,]                                # 시간정보가 없다
 class(DAT)
 TRD &lt;- ts(DAT[,1], start=c(1,1), freq=7) # 1주째 월요일부터, 요일 주기 ⇒ 7
@@ -314,7 +315,7 @@ class(QQQ); start(QQQ); end(QQQ); frequency(QQQ)</textarea></div><div class="cst
 <header class="shead"><div class="sunit">U1 그려 읽기</div><h2>추세</h2></header>
 <div class="sbody two"><div class="lcol">
 <p>추세는 관측값이 지속적으로 증가하거나 감소하는 장기적인 경향이다. 요일 주기를 지우고 추세만 보려면 주 단위로 묶는다. <code>aggregate()</code>는 한 주기(7일)의 값을 합하고, 7로 나누면 주간 평균이다.</p>
-<div class="cell" id="cell-u1_trend" data-cell="u1_trend"><div class="chead"><span class="ctitle">주별 합과 주간 평균</span><span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="5" aria-label="R 코드: 주별 합과 주간 평균">aggregate(TRD)              # 주별 합
+<div class="cell" id="cell-u1_trend" data-cell="u1_trend"><div class="chead"><span class="ctitle">주별 합과 주간 평균</span><span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="5" aria-label="R 코드: 주별 합과 주간 평균">aggregate(TRD)              # 주별 합
 ag &lt;- aggregate(TRD)/7      # 주간 평균 (한 주 = 7일)
 layout(1:2)
 plot(TRD)
@@ -330,7 +331,7 @@ plot(ag)</textarea></div><div class="cstatus" aria-live="polite"></div></div>
 <header class="shead"><div class="sunit">U1 그려 읽기</div><h2>추세선 겹쳐 그리기</h2></header>
 <div class="sbody two"><div class="lcol">
 <p>주간 평균을 원자료 위에 겹치면 요일 주기 속에서 추세가 한눈에 보인다. <code>lines()</code>는 이미 그린 그림 위에 선을 더한다.</p>
-<div class="cell" id="cell-u1_trend2" data-cell="u1_trend2"><div class="chead"><span class="ctitle">추세선 겹쳐 그리기</span><span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="cneeds">앞 셀: <a data-goto-cell="u1_trend">주별 합과 주간 평균</a></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="2" aria-label="R 코드: 추세선 겹쳐 그리기">plot(TRD)
+<div class="cell" id="cell-u1_trend2" data-cell="u1_trend2"><div class="chead"><span class="ctitle">추세선 겹쳐 그리기</span><span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="cneeds">앞 셀: <a data-goto-cell="u1_trend">주별 합과 주간 평균</a></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="2" aria-label="R 코드: 추세선 겹쳐 그리기">plot(TRD)
 lines(ag, col=&quot;red&quot;)        # 주간 평균을 추세선으로 겹친다</textarea></div><div class="cstatus" aria-live="polite"></div></div>
 </div><div class="rcol"><div class="outpane">
 <div class="oslot" data-out="u1_trend2"><div class="olabel">추세선 겹쳐 그리기</div><div class="ohint">결과</div><div class="out"></div></div>
@@ -342,7 +343,7 @@ lines(ag, col=&quot;red&quot;)        # 주간 평균을 추세선으로 겹친�
 <header class="shead"><div class="sunit">U1 그려 읽기</div><h2>계절성</h2></header>
 <div class="sbody two"><div class="lcol">
 <p>계절성은 주기적인 성분에 의한 변동이다. 월별 자료는 1년, 주 자료는 7일(요일)이 주기다. <code>cycle()</code>은 각 관측값이 주기 안에서 몇 번째인지(1 = 월요일, …, 7 = 일요일)를 주고, 같은 번호끼리 상자그림을 그리면 요일별 분포가 보인다.</p>
-<div class="cell" id="cell-u1_season" data-cell="u1_season"><div class="chead"><span class="ctitle">요일별 상자그림</span><span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="2" aria-label="R 코드: 요일별 상자그림">cycle(TRD)                      # 1 = 월요일, …, 7 = 일요일
+<div class="cell" id="cell-u1_season" data-cell="u1_season"><div class="chead"><span class="ctitle">요일별 상자그림</span><span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="2" aria-label="R 코드: 요일별 상자그림">cycle(TRD)                      # 1 = 월요일, …, 7 = 일요일
 boxplot(TRD ~ cycle(TRD))       # 요일별 상자그림</textarea></div><div class="cstatus" aria-live="polite"></div></div>
 </div><div class="rcol"><div class="outpane">
 <div class="oslot" data-out="u1_season"><div class="olabel">요일별 상자그림</div><div class="ohint">결과</div><div class="out"></div></div>
@@ -354,7 +355,7 @@ boxplot(TRD ~ cycle(TRD))       # 요일별 상자그림</textarea></div><div cl
 <header class="shead"><div class="sunit">U1 그려 읽기</div><h2>같은 요일만 뽑기</h2></header>
 <div class="sbody two"><div class="lcol">
 <p><code>window()</code>는 조건을 만족하는 값만 가져온다. <code>start</code>를 1주째 화요일로 두고 <code>freq=T</code>를 주면 매주 화요일 값만 남는다.</p>
-<div class="cell" id="cell-u1_window" data-cell="u1_window"><div class="chead"><span class="ctitle">같은 요일만 뽑기</span><span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="2" aria-label="R 코드: 같은 요일만 뽑기">trd.tue &lt;- window(TRD, start=c(1,2), freq=T)   # 바꿔 보기: 요일 (2 → 6)
+<div class="cell" id="cell-u1_window" data-cell="u1_window"><div class="chead"><span class="ctitle">같은 요일만 뽑기</span><span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="2" aria-label="R 코드: 같은 요일만 뽑기">trd.tue &lt;- window(TRD, start=c(1,2), freq=T)   # 바꿔 보기: 요일 (2 → 6)
 trd.tue                                        # 매주 화요일 값</textarea></div><div class="cstatus" aria-live="polite"></div></div>
 </div><div class="rcol"><div class="outpane">
 <div class="oslot" data-out="u1_window"><div class="olabel">같은 요일만 뽑기</div><div class="ohint">결과</div><div class="out"></div></div>
@@ -367,7 +368,7 @@ trd.tue                                        # 매주 화요일 값</textarea>
 <header class="shead"><div class="sunit">U1 그려 읽기</div><h2>변동의 증가</h2></header>
 <div class="sbody two"><div class="lcol">
 <p>변동폭이 수준과 함께 커지는 것도 그림에서 읽는 특징이다. 변동폭이 시점에 따라 달라지는 것을 이분산성이라 하고, U7에서 log 변환으로 다룬다.</p>
-<div class="cell" id="cell-u1_var" data-cell="u1_var"><div class="chead"><span class="ctitle">변동폭 보기</span><span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="1" aria-label="R 코드: 변동폭 보기">plot(TRD)                   # 변동폭이 시간에 따라 일정한지 본다</textarea></div><div class="cstatus" aria-live="polite"></div></div>
+<div class="cell" id="cell-u1_var" data-cell="u1_var"><div class="chead"><span class="ctitle">변동폭 보기</span><span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="1" aria-label="R 코드: 변동폭 보기">plot(TRD)                   # 변동폭이 시간에 따라 일정한지 본다</textarea></div><div class="cstatus" aria-live="polite"></div></div>
 </div><div class="rcol"><div class="outpane">
 <div class="oslot" data-out="u1_var"><div class="olabel">변동폭 보기</div><div class="ohint">결과</div><div class="out"></div></div>
 </div>
@@ -378,7 +379,7 @@ trd.tue                                        # 매주 화요일 값</textarea>
 <header class="shead"><div class="sunit">U1 그려 읽기</div><h2>추세의 성격</h2></header>
 <div class="sbody two"><div class="lcol">
 <p>비교적 일관된 패턴을 보이는 추세를 <b>결정적 추세</b>(deterministic trend), 예측할 수 없는 시점에 방향이 바뀌는 추세를 <b>확률적 추세</b>(stochastic trend)라 한다. 확률적 추세는 금융 시계열에 흔하고, U5에서 다루는 확률보행(random walk) 모형이 잘 맞을 때가 있다. 추세의 방향이 바뀐 시점(구조변화)이 있으면, 추세가 안정적으로 유지되는 구간의 자료만 이용하여 분석한다.</p>
-<div class="cell" id="cell-u1_wd" data-cell="u1_wd"><div class="chead"><span class="ctitle">추세가 안정적인 구간만 쓰기</span><span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="6" aria-label="R 코드: 추세가 안정적인 구간만 쓰기">trd.wd &lt;- window(TRD, start=c(7,1), end=c(52,7))   # 바꿔 보기: 시작 주 (7 → 10)
+<div class="cell" id="cell-u1_wd" data-cell="u1_wd"><div class="chead"><span class="ctitle">추세가 안정적인 구간만 쓰기</span><span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="6" aria-label="R 코드: 추세가 안정적인 구간만 쓰기">trd.wd &lt;- window(TRD, start=c(7,1), end=c(52,7))   # 바꿔 보기: 시작 주 (7 → 10)
 plot(trd.wd)
 time &lt;- time(trd.wd)        # 시간을 주 단위의 숫자로 바꾼 값 (7, 7.14, …)
 time[1:4]
@@ -396,7 +397,7 @@ lm(trd.wd ~ time)</textarea></div><div class="cstatus" aria-live="polite"></div>
 <header class="shead"><div class="sunit">U1 그려 읽기</div><h2>QQQ 월말 종가의 추세</h2></header>
 <div class="sbody two"><div class="lcol">
 <p>주식·환율 같은 금융 시계열은 예측할 수 없는 시점에 방향이 바뀌는 확률적 추세를 보이는 일이 많다. 대조 자료 QQQ 월말 종가에 같은 그림을 그려 추세의 성격을 읽는다.</p>
-<div class="cell" id="cell-u1_qqq" data-cell="u1_qqq"><div class="chead"><span class="ctitle">QQQ 월말 종가 그림</span><span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="1" aria-label="R 코드: QQQ 월말 종가 그림">plot(QQQ)                   # 1999년 4월 ~ 2025년 12월</textarea></div><div class="cstatus" aria-live="polite"></div></div>
+<div class="cell" id="cell-u1_qqq" data-cell="u1_qqq"><div class="chead"><span class="ctitle">QQQ 월말 종가 그림</span><span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="1" aria-label="R 코드: QQQ 월말 종가 그림">plot(QQQ)                   # 1999년 4월 ~ 2025년 12월</textarea></div><div class="cstatus" aria-live="polite"></div></div>
 </div><div class="rcol"><div class="outpane">
 <div class="oslot" data-out="u1_qqq"><div class="olabel">QQQ 월말 종가 그림</div><div class="ohint">결과</div><div class="out"></div></div>
 </div>
@@ -406,8 +407,8 @@ lm(trd.wd ~ time)</textarea></div><div class="cstatus" aria-live="polite"></div>
 <section class="slide wrap one" id="s-U1-10" data-unit="U1" data-key="U1-10" data-title="정리 · 그려 읽기" data-ref="강의 1장 p.7, p.12" hidden>
 <header class="shead"><div class="sunit">U1 그려 읽기</div><h2><span class="pre">정리 · </span>그려 읽기</h2></header>
 <div class="sbody one">
-<p>그림에서 읽는 특징의 원리와 주 자료에서 확인한 것.</p>
-<ul><li>추세는 관측값이 지속적으로 증가하거나 감소하는 장기적 경향이다. 주기(7일)만큼 묶어 평균하면 요일 주기와 불규칙 변동이 지워져 추세만 남는다.</li><li>주 자료의 주간 평균은 6주째(2024년 11월 11–17일)까지 증가하다가 그 뒤로는 대체로 감소한다. 21–22주째(2025년 2월 24일 ~ 3월 9일)에 한 번 더 솟지만 6주째 고점에는 못 미쳐, 큰 방향은 한 번 바뀐다.</li><li>계절성은 주기적인 성분에 의한 변동이고, 주기 안의 위치(요일)별 상자그림으로 읽는다. 주 자료는 토요일과 일요일이 낮고 평일이 높은 요일 주기다. 같은 요일만 뽑아도 화요일 값은 6주째와 10주째가 가장 크고 21–22주째에 다시 솟아, 주간 평균과 같은 모양이다.</li><li>변동폭이 수준과 함께 커져 시점에 따라 달라지는 것이 이분산성이다. 주 자료는 수준이 높았던 2024년 11월 ~ 2025년 3월에 변동폭이 크고 수준이 낮아진 뒤에는 작아서, U7에서 log 변환으로 다룬다.</li><li>비교적 일관된 패턴의 추세는 결정적 추세, 예측할 수 없는 시점에 방향이 바뀌는 추세는 확률적 추세다. 방향이 바뀐 시점(구조변화)이 있으면 추세가 안정적으로 유지되는 구간만 쓴다.</li><li>주 자료는 6주째 고점 뒤로 감소 추세가 이어지므로 7주째부터 쓰고, 이 구간에 맞춘 직선의 기울기는 약 −88,930이다. 시간 단위가 주이므로 한 주 지날 때마다 하루 거래 횟수가 약 88,930번씩 줄어든다는 뜻이다.</li><li>QQQ 월말 종가는 2000년, 2008년, 2022년처럼 예측할 수 없는 시점에 방향이 바뀌어 확률적 추세의 모습이다. 통계적 판단은 U4의 단위근 검정으로 한다.</li><li>관찰된 특징(추세, 계절성, 변동의 증가)을 모두 반영하는 모형을 고려해야 한다.</li></ul>
+<p>그림에서 읽는 네 가지 특징과 그 뜻.</p>
+<ul><li>시계열자료 {X<sub>t</sub>}는 시간 순서로 관측된 하나의 표본경로다. 하나의 시간에 하나의 값만 있고, 관측값들 사이에 관계가 있다.</li><li>추세는 관측값이 지속적으로 증가하거나 감소하는 장기적 경향이다. 주기 길이만큼 묶어 평균하면(<code>aggregate</code>) 계절 변동과 불규칙 변동이 지워져 추세만 남는다.</li><li>계절성은 주기적인 성분에 의한 변동이다. 주기 안의 위치(<code>cycle</code>)별 상자그림에서 어느 위치가 높고 낮은지로 읽는다.</li><li>변동폭이 수준과 함께 커져 시점에 따라 달라지는 것이 이분산성이다. 회귀모형에서는 log 변환으로 분산을 안정화한다.</li><li>일관된 패턴의 추세는 결정적 추세, 예측할 수 없는 시점에 방향이 바뀌는 추세는 확률적 추세다. 확률적 추세는 금융 시계열에 흔하다.</li><li>추세의 방향이 바뀐 시점(구조변화)이 있으면 추세가 안정적으로 유지되는 구간의 자료만 쓴다. 직선 적합의 기울기는 시간 단위당 변화량이다.</li><li>관찰된 특징(추세, 계절성, 변동의 증가)을 모두 반영하는 모형을 고려해야 한다.</li></ul>
 <p>다음 단원은 이 특징들을 성분으로 나누어 보는 분해법이다.</p>
 </div>
 </section>
@@ -423,7 +424,7 @@ lm(trd.wd ~ time)</textarea></div><div class="cstatus" aria-live="polite"></div>
 <header class="shead"><div class="sunit">U2 성분 나누기</div><h2>가법 분해</h2></header>
 <div class="sbody two"><div class="lcol">
 <p>분해는 세 단계다. ① 이동평균 등으로 추세 m̂<sub>t</sub>를 추정한다. 월별 자료면 12개월 중심 이동평균 m̂<sub>t</sub> = (½x<sub>t−6</sub> + x<sub>t−5</sub> + ⋯ + x<sub>t+5</sub> + ½x<sub>t+6</sub>) / 12이고, 주 자료는 <code>freq=7</code>이라 <code>decompose()</code>가 7일 중심 이동평균을 쓴다. ② 추세를 뺀 X<sub>t</sub> − m̂<sub>t</sub>의 요일별 평균으로 ŝ<sub>t</sub>를 구한다. ③ 남은 것이 불규칙 ẑ<sub>t</sub>다.</p>
-<div class="cell" id="cell-u2_add" data-cell="u2_add"><div class="chead"><span class="ctitle">가법 분해</span><span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="1" aria-label="R 코드: 가법 분해">plot(decompose(TRD))</textarea></div><div class="cstatus" aria-live="polite"></div></div>
+<div class="cell" id="cell-u2_add" data-cell="u2_add"><div class="chead"><span class="ctitle">가법 분해</span><span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="1" aria-label="R 코드: 가법 분해">plot(decompose(TRD))</textarea></div><div class="cstatus" aria-live="polite"></div></div>
 </div><div class="rcol"><div class="outpane">
 <div class="oslot" data-out="u2_add"><div class="olabel">가법 분해</div><div class="ohint">결과</div><div class="out"></div></div>
 </div>
@@ -435,7 +436,7 @@ lm(trd.wd ~ time)</textarea></div><div class="cstatus" aria-live="polite"></div>
 <header class="shead"><div class="sunit">U2 성분 나누기</div><h2>승법 분해</h2></header>
 <div class="sbody two"><div class="lcol">
 <p>승법모형은 추세를 빼는 대신 나눈다. X<sub>t</sub> / m̂<sub>t</sub>의 요일별 평균이 ŝ<sub>t</sub>이고, 불규칙은 X<sub>t</sub> / (m̂<sub>t</sub> ŝ<sub>t</sub>)다.</p>
-<div class="cell" id="cell-u2_mult" data-cell="u2_mult"><div class="chead"><span class="ctitle">승법 분해</span><span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="1" aria-label="R 코드: 승법 분해">plot(decompose(TRD, type=&quot;mult&quot;))</textarea></div><div class="cstatus" aria-live="polite"></div></div>
+<div class="cell" id="cell-u2_mult" data-cell="u2_mult"><div class="chead"><span class="ctitle">승법 분해</span><span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="1" aria-label="R 코드: 승법 분해">plot(decompose(TRD, type=&quot;mult&quot;))</textarea></div><div class="cstatus" aria-live="polite"></div></div>
 </div><div class="rcol"><div class="outpane">
 <div class="oslot" data-out="u2_mult"><div class="olabel">승법 분해</div><div class="ohint">결과</div><div class="out"></div></div>
 </div>
@@ -446,14 +447,14 @@ lm(trd.wd ~ time)</textarea></div><div class="cstatus" aria-live="polite"></div>
 <header class="shead"><div class="sunit">U2 성분 나누기</div><h2>계절조정과 추세 제거</h2></header>
 <div class="sbody two"><div class="lcol">
 <p>계절성에 의한 변동이 주된 관심이 아닐 때는 계절변동을 제거한 <b>계절조정</b> 시계열을 본다. 월별 실업률처럼 경제 상황에 따른 비계절 변동이 더 중요한 금융·경제 시계열에 주로 쓴다. 승법모형이면 계절조정은 X<sub>t</sub> / ŝ<sub>t</sub>, 추세 제거는 X<sub>t</sub> / m̂<sub>t</sub>다.</p>
-<div class="cell" id="cell-u2_adj" data-cell="u2_adj"><div class="chead"><span class="ctitle">승법 계절조정과 추세 제거</span><span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="3" aria-label="R 코드: 승법 계절조정과 추세 제거">d &lt;- decompose(TRD, type=&quot;mult&quot;)
+<div class="cell" id="cell-u2_adj" data-cell="u2_adj"><div class="chead"><span class="ctitle">승법 계절조정과 추세 제거</span><span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="3" aria-label="R 코드: 승법 계절조정과 추세 제거">d &lt;- decompose(TRD, type=&quot;mult&quot;)
 plot(TRD/d$seasonal, main=&quot;계절변동을 제거한 시계열&quot;)
 plot(TRD/d$trend, main=&quot;추세변동을 제거한 시계열&quot;)</textarea></div><div class="cstatus" aria-live="polite"></div></div>
 </div><div class="rcol"><div class="outpane">
 <div class="oslot" data-out="u2_adj"><div class="olabel">승법 계절조정과 추세 제거</div><div class="ohint">결과</div><div class="out"></div></div>
 </div>
 <p class="note"><code>d$seasonal</code>이 ŝ<sub>t</sub>, <code>d$trend</code>가 m̂<sub>t</sub>다. <code>TRD/d$seasonal</code>은 승법 계절조정 X<sub>t</sub> / ŝ<sub>t</sub>, <code>TRD/d$trend</code>는 승법 추세 제거 X<sub>t</sub> / m̂<sub>t</sub>다.</p>
-<details class="more"><summary>가법모형으로 같은 계산을 하면</summary><div class="morebody"><p>가법은 나누는 대신 뺀다: 계절조정 X<sub>t</sub> − ŝ<sub>t</sub>, 추세 제거 X<sub>t</sub> − m̂<sub>t</sub>.</p><div class="cell" id="cell-u2_addadj" data-cell="u2_addadj"><div class="chead"><span class="ctitle">가법 계절조정과 추세 제거</span><span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="3" aria-label="R 코드: 가법 계절조정과 추세 제거">d &lt;- decompose(TRD)
+<details class="more"><summary>가법모형으로 같은 계산을 하면</summary><div class="morebody"><p>가법은 나누는 대신 뺀다: 계절조정 X<sub>t</sub> − ŝ<sub>t</sub>, 추세 제거 X<sub>t</sub> − m̂<sub>t</sub>.</p><div class="cell" id="cell-u2_addadj" data-cell="u2_addadj"><div class="chead"><span class="ctitle">가법 계절조정과 추세 제거</span><span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="3" aria-label="R 코드: 가법 계절조정과 추세 제거">d &lt;- decompose(TRD)
 plot(TRD - d$seasonal, main=&quot;계절변동을 제거한 시계열 (가법)&quot;)
 plot(TRD - d$trend, main=&quot;추세변동을 제거한 시계열 (가법)&quot;)</textarea></div><div class="cstatus" aria-live="polite"></div><div class="out"></div></div><p class="note">승법 셀의 <code>/</code>가 여기서는 <code>-</code>다. 가법은 X<sub>t</sub> = m<sub>t</sub> + s<sub>t</sub> + z<sub>t</sub>라서 빼고, 승법은 곱이라서 나눈다.</p></div></details>
 </div></div>
@@ -461,8 +462,8 @@ plot(TRD - d$trend, main=&quot;추세변동을 제거한 시계열 (가법)&quot
 <section class="slide wrap one" id="s-U2-5" data-unit="U2" data-key="U2-5" data-title="정리 · 성분 나누기" data-ref="강의 1장 p.21–26" hidden>
 <header class="shead"><div class="sunit">U2 성분 나누기</div><h2><span class="pre">정리 · </span>성분 나누기</h2></header>
 <div class="sbody one">
-<p>분해법의 원리와 주 자료에서 확인한 것.</p>
-<ul><li>분해법은 X<sub>t</sub>를 추세 m<sub>t</sub>, 계절 s<sub>t</sub>, 불규칙 z<sub>t</sub>로 나눈다. 추세는 중심 이동평균으로, 계절은 추세를 제거한 값의 주기별 평균으로, 불규칙은 나머지로 구한다.</li><li>계절변동의 폭이 수준과 무관하면 가법, 수준에 비례하면 승법이다. 주 자료는 수준이 높았던 2024년 11월 ~ 2025년 3월에 평일과 주말의 차이가 커서 승법이 맞다.</li><li>가법은 빼고 승법은 나눈다. 승법의 seasonal은 1을 중심으로 한 비율이라 토·일이 1보다 작다.</li><li>주 자료의 trend는 U1의 주간 평균처럼 6주째까지 오르다가 내려오고, seasonal은 7일마다 같은 모양으로 반복되며 주말에 낮다.</li><li>계절조정 시계열 X<sub>t</sub> / ŝ<sub>t</sub>에서는 주말의 하락이 사라지고 추세와 불규칙 변동이 남는다. 계절성이 관심이 아닐 때 이것을 본다.</li><li>분해법은 자료의 구조를 이해하는 데 좋고, 예측에는 제한적이다.</li></ul>
+<p>분해법의 원리.</p>
+<ul><li>분해법은 X<sub>t</sub>를 추세 m<sub>t</sub>, 계절 s<sub>t</sub>, 불규칙 z<sub>t</sub>로 나눈다. 추세는 중심 이동평균으로, 계절은 추세를 제거한 값의 주기별 평균으로, 불규칙은 나머지로 구한다.</li><li>계절변동의 폭이 수준과 무관하면 가법 X<sub>t</sub> = m<sub>t</sub> + s<sub>t</sub> + z<sub>t</sub>, 수준에 비례하면 승법 X<sub>t</sub> = m<sub>t</sub> × s<sub>t</sub> × z<sub>t</sub>다.</li><li>가법은 빼고 승법은 나눈다. 가법의 seasonal은 0을 중심으로 더하는 양, 승법의 seasonal은 1을 중심으로 곱하는 비율이다.</li><li><code>decompose</code> 그림의 trend는 평활된 수준의 움직임, seasonal은 주기마다 똑같이 반복되는 모양, random은 두 성분으로 설명되지 않은 나머지다.</li><li>계절조정 시계열(가법 X<sub>t</sub> − ŝ<sub>t</sub>, 승법 X<sub>t</sub> / ŝ<sub>t</sub>)은 계절 변동을 걷어낸 것이라, 계절성이 관심이 아닐 때 수준과 추세를 보는 데 쓴다.</li><li>분해법은 계절성분이 매 주기 같다고 가정하므로 구조를 이해하는 데 좋고, 예측에는 제한적이다.</li></ul>
 <p>다음 단원은 과거값으로 바로 예측하는 평활법이다.</p>
 </div>
 </section>
@@ -479,21 +480,21 @@ plot(TRD - d$trend, main=&quot;추세변동을 제거한 시계열 (가법)&quot
 <div class="sbody two"><div class="lcol">
 <p>이동평균법은 최근 m개 값의 평균을 다음 값의 예측으로 쓴다: X̂<sub>t+1</sub> = (X<sub>t</sub> + X<sub>t−1</sub> + ⋯ + X<sub>t−m+1</sub>) / m. m개의 과거값에 1/m씩 같은 가중치를 준다. U2의 분해에서 추세 추정에 쓴 것은 앞뒤 값을 함께 쓰는 중심 이동평균이고, 예측에 쓰는 것은 과거값만 쓰는 단측 이동평균이다.</p>
 <p>자료가 364개이므로 t = 364이고, 예측하는 값은 X̂<sub>365</sub>, 곧 2025년 10월 6일(월)의 거래 횟수다. m = 7은 최근 1주, m = 3은 최근 3일(금·토·일)의 평균이다.</p>
-<div class="cell" id="cell-u3_ma" data-cell="u3_ma"><div class="chead"><span class="ctitle">최근 m일 평균으로 다음 날 예측</span><span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="3" aria-label="R 코드: 최근 m일 평균으로 다음 날 예측">m &lt;- 7                        # 바꿔 보기: m (7 → 3)
+<div class="cell" id="cell-u3_ma" data-cell="u3_ma"><div class="chead"><span class="ctitle">최근 m일 평균으로 다음 날 예측</span><span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="3" aria-label="R 코드: 최근 m일 평균으로 다음 날 예측">m &lt;- 7                        # 바꿔 보기: m (7 → 3)
 TRD[(364-m+1):364]            # X_{t−m+1}, ⋯, X_{t−1}, X_t
 mean(TRD[(364-m+1):364])      # X̂_{t+1} = (X_t + X_{t−1} + ⋯ + X_{t−m+1}) / m</textarea></div><div class="cstatus" aria-live="polite"></div></div>
 </div><div class="rcol"><div class="outpane">
 <div class="oslot" data-out="u3_ma"><div class="olabel">최근 m일 평균으로 다음 날 예측</div><div class="ohint">결과</div><div class="out"></div></div>
 </div>
 <p class="note"><code>(364-m+1):364</code>는 t − m + 1부터 t까지다 (t = 364). m = 7이면 358:364, 곧 마지막 1주다.</p>
-<details class="more"><summary>자료 전체 그림을 다시 보면</summary><div class="morebody"><p>예측에 들어가는 값은 그림 맨 오른쪽 끝의 m개다.</p><div class="cell" id="cell-u3_plot" data-cell="u3_plot"><div class="chead"><span class="ctitle">자료 그림</span><span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="1" aria-label="R 코드: 자료 그림">plot(TRD, xlab=&quot;Time/weeks&quot;, ylab=&quot;BTC 거래 횟수&quot;)</textarea></div><div class="cstatus" aria-live="polite"></div><div class="out"></div></div></div></details>
+<details class="more"><summary>자료 전체 그림을 다시 보면</summary><div class="morebody"><p>예측에 들어가는 값은 그림 맨 오른쪽 끝의 m개다.</p><div class="cell" id="cell-u3_plot" data-cell="u3_plot"><div class="chead"><span class="ctitle">자료 그림</span><span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="1" aria-label="R 코드: 자료 그림">plot(TRD, xlab=&quot;Time/weeks&quot;, ylab=&quot;BTC 거래 횟수&quot;)</textarea></div><div class="cstatus" aria-live="polite"></div><div class="out"></div></div></div></details>
 </div></div>
 </section>
 <section class="slide two" id="s-U3-3" data-unit="U3" data-key="U3-3" data-title="단순지수평활" data-ref="강의 3장 p.4, p.6–7, p.9" hidden>
 <header class="shead"><div class="sunit">U3 바로 예측</div><h2>단순지수평활</h2></header>
 <div class="sbody two"><div class="lcol">
 <p>단순지수평활법의 모형은 X<sub>t</sub> = 수준<sub>t</sub> + w<sub>t</sub>로, 수준은 시간에 따라 바뀔 수 있지만 한 방향으로 증가하거나 감소하는 체계적인 기울기는 없고 w<sub>t</sub>는 불규칙 성분이다. t 시점까지의 자료로 구한 수준의 추정치 a<sub>t</sub>는 a<sub>t</sub> = αX<sub>t</sub> + (1 − α)a<sub>t−1</sub>로 갱신한다 (0 &lt; α &lt; 1, a<sub>1</sub> = X<sub>1</sub>). α는 예측오차 e<sub>t</sub> = X<sub>t</sub> − a<sub>t−1</sub>의 제곱합 Σ<sub>t=2</sub><sup>n</sup> e<sub>t</sub>²(SSE)가 최소가 되도록 고른다.</p>
-<div class="cell" id="cell-u3_ses1" data-cell="u3_ses1"><div class="chead"><span class="ctitle">α를 자동으로 고르기</span><span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="4" aria-label="R 코드: α를 자동으로 고르기">trd.hw1 &lt;- HoltWinters(TRD, beta=FALSE, gamma=FALSE)   # 추세·계절성 없이 수준만
+<div class="cell" id="cell-u3_ses1" data-cell="u3_ses1"><div class="chead"><span class="ctitle">α를 자동으로 고르기</span><span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="4" aria-label="R 코드: α를 자동으로 고르기">trd.hw1 &lt;- HoltWinters(TRD, beta=FALSE, gamma=FALSE)   # 추세·계절성 없이 수준만
 trd.hw1
 plot(trd.hw1, main=&quot;alpha=0.334&quot;)
 trd.hw1$SSE</textarea></div><div class="cstatus" aria-live="polite"></div></div>
@@ -509,7 +510,7 @@ trd.hw1$SSE</textarea></div><div class="cstatus" aria-live="polite"></div></div>
 <header class="shead"><div class="sunit">U3 바로 예측</div><h2>α를 정해 두기</h2></header>
 <div class="sbody two"><div class="lcol">
 <p>갱신식을 풀어 쓰면 a<sub>t</sub> = αX<sub>t</sub> + α(1 − α)X<sub>t−1</sub> + α(1 − α)²X<sub>t−2</sub> + ⋯, 곧 지수가중이동평균(EWMA)이다. 과거 자료일수록 가중치가 지수적으로 줄어든다. α ≈ 0이면 평활의 효과가 커서 지엽적인 변화에 둔감하고, α ≈ 1이면 평활의 효과가 작아 민감하다. α를 직접 정해 적합할 수도 있지만, 그 SSE는 제곱합을 최소로 하는 자동 선택의 SSE보다 작을 수 없다.</p>
-<div class="cell" id="cell-u3_ses2" data-cell="u3_ses2"><div class="chead"><span class="ctitle">α를 정해 두기</span><span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="4" aria-label="R 코드: α를 정해 두기">trd.hw2 &lt;- HoltWinters(TRD, alpha=0.2, beta=FALSE, gamma=FALSE)   # 바꿔 보기: alpha (0.2 → 0.9)
+<div class="cell" id="cell-u3_ses2" data-cell="u3_ses2"><div class="chead"><span class="ctitle">α를 정해 두기</span><span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="4" aria-label="R 코드: α를 정해 두기">trd.hw2 &lt;- HoltWinters(TRD, alpha=0.2, beta=FALSE, gamma=FALSE)   # 바꿔 보기: alpha (0.2 → 0.9)
 trd.hw2
 plot(trd.hw2, main=&quot;alpha=0.2&quot;)
 trd.hw2$SSE</textarea></div><div class="cstatus" aria-live="polite"></div></div>
@@ -517,7 +518,7 @@ trd.hw2$SSE</textarea></div><div class="cstatus" aria-live="polite"></div></div>
 <div class="oslot" data-out="u3_ses2"><div class="olabel">α를 정해 두기</div><div class="ohint">결과</div><div class="out"></div></div>
 </div>
 <p class="note"><code>alpha=0.2</code>는 α를 0.2로 정해 두고 적합한다는 뜻이다. 출력의 alpha: 0.2가 그것이고, Coefficients a는 이 α로 구한 마지막 시점의 수준 추정치다.</p>
-<details class="more"><summary>갱신식을 반복문으로 확인하면</summary><div class="morebody"><p>a<sub>t</sub> = αX<sub>t</sub> + (1 − α)a<sub>t−1</sub>, a<sub>1</sub> = X<sub>1</sub>을 같은 α로 직접 계산해 <code>trd.hw2</code>와 견준다.</p><div class="cell" id="cell-u3_loop" data-cell="u3_loop"><div class="chead"><span class="ctitle">갱신식을 반복문으로</span><span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="cneeds">앞 셀: <a data-goto-cell="u3_ses2">α를 정해 두기</a></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="9" aria-label="R 코드: 갱신식을 반복문으로">al &lt;- trd.hw2$alpha                     # α를 trd.hw2와 같게
+<details class="more"><summary>갱신식을 반복문으로 확인하면</summary><div class="morebody"><p>a<sub>t</sub> = αX<sub>t</sub> + (1 − α)a<sub>t−1</sub>, a<sub>1</sub> = X<sub>1</sub>을 같은 α로 직접 계산해 <code>trd.hw2</code>와 견준다.</p><div class="cell" id="cell-u3_loop" data-cell="u3_loop"><div class="chead"><span class="ctitle">갱신식을 반복문으로</span><span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="cneeds">앞 셀: <a data-goto-cell="u3_ses2">α를 정해 두기</a></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="9" aria-label="R 코드: 갱신식을 반복문으로">al &lt;- trd.hw2$alpha                     # α를 trd.hw2와 같게
 a &lt;- rep(0, 364)
 a[1] &lt;- TRD[1]                          # a_1 = X_1
 for (i in 2:364){                       # 자료가 364개
@@ -532,7 +533,7 @@ a[364]                                  # trd.hw2 출력의 Coefficients a와 �
 <header class="shead"><div class="sunit">U3 바로 예측</div><h2>Holt-Winters</h2></header>
 <div class="sbody two"><div class="lcol">
 <p>추세와 계절성이 있을 때는 수준 a<sub>t</sub>, 추세 b<sub>t</sub>, 계절성 s<sub>t</sub>를 함께 갱신하는 Holt-Winters 방법을 쓴다. 승법모형은 X<sub>t</sub> = (수준<sub>t</sub> + 추세<sub>t</sub>) × 계절성<sub>t</sub> + w<sub>t</sub>이고, 갱신식은 a<sub>t</sub> = α(X<sub>t</sub> / s<sub>t−p</sub>) + (1 − α)(a<sub>t−1</sub> + b<sub>t−1</sub>), b<sub>t</sub> = β(a<sub>t</sub> − a<sub>t−1</sub>) + (1 − β)b<sub>t−1</sub>, s<sub>t</sub> = γ(X<sub>t</sub> / a<sub>t</sub>) + (1 − γ)s<sub>t−p</sub>다 (0 &lt; α, β, γ &lt; 1). 주기 p는 주 자료에서 7이다. a<sub>t</sub>, b<sub>t</sub>, s<sub>t</sub>는 t 시점까지의 자료로 구한 X<sub>t+1</sub>의 수준(level)·추세(slope)·계절성(seasonal)의 추정치다.</p>
-<div class="cell" id="cell-u3_hw" data-cell="u3_hw"><div class="chead"><span class="ctitle">승법 Holt-Winters</span><span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="3" aria-label="R 코드: 승법 Holt-Winters">trd.hw &lt;- HoltWinters(TRD, seasonal=&quot;mult&quot;)
+<div class="cell" id="cell-u3_hw" data-cell="u3_hw"><div class="chead"><span class="ctitle">승법 Holt-Winters</span><span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="3" aria-label="R 코드: 승법 Holt-Winters">trd.hw &lt;- HoltWinters(TRD, seasonal=&quot;mult&quot;)
 trd.hw
 plot(trd.hw)</textarea></div><div class="cstatus" aria-live="polite"></div></div>
 </div><div class="rcol"><div class="outpane">
@@ -540,7 +541,7 @@ plot(trd.hw)</textarea></div><div class="cstatus" aria-live="polite"></div></div
 </div>
 <p class="note">출력의 Coefficients a, b, s1–s7은 마지막 시점(t = 364)의 수준·추세·계절성 추정치다. s1–s7은 다음 7일(월–일)의 예측에 쓰인다.</p>
 <p class="note">e+06은 × 10<sup>6</sup>, e-01은 × 10<sup>−1</sup>이다: 6.725979e+06은 약 673만, 3.281491e-01은 약 0.328이다.</p>
-<details class="more"><summary>가법모형으로 같은 적합을 하면</summary><div class="morebody"><p>가법모형은 X<sub>t</sub> = 수준<sub>t</sub> + 추세<sub>t</sub> + 계절성<sub>t</sub> + w<sub>t</sub>다. 수준과 계절성의 갱신식은 나누는 대신 뺀다: a<sub>t</sub> = α(X<sub>t</sub> − s<sub>t−p</sub>) + (1 − α)(a<sub>t−1</sub> + b<sub>t−1</sub>), s<sub>t</sub> = γ(X<sub>t</sub> − a<sub>t</sub>) + (1 − γ)s<sub>t−p</sub>. b<sub>t</sub>는 승법과 같다.</p><div class="cell" id="cell-u3_hwadd" data-cell="u3_hwadd"><div class="chead"><span class="ctitle">가법 Holt-Winters</span><span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="cneeds">앞 셀: <a data-goto-cell="u3_hw">승법 Holt-Winters</a></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="5" aria-label="R 코드: 가법 Holt-Winters">trd.hw.add &lt;- HoltWinters(TRD, seasonal=&quot;additive&quot;)
+<details class="more"><summary>가법모형으로 같은 적합을 하면</summary><div class="morebody"><p>가법모형은 X<sub>t</sub> = 수준<sub>t</sub> + 추세<sub>t</sub> + 계절성<sub>t</sub> + w<sub>t</sub>다. 수준과 계절성의 갱신식은 나누는 대신 뺀다: a<sub>t</sub> = α(X<sub>t</sub> − s<sub>t−p</sub>) + (1 − α)(a<sub>t−1</sub> + b<sub>t−1</sub>), s<sub>t</sub> = γ(X<sub>t</sub> − a<sub>t</sub>) + (1 − γ)s<sub>t−p</sub>. b<sub>t</sub>는 승법과 같다.</p><div class="cell" id="cell-u3_hwadd" data-cell="u3_hwadd"><div class="chead"><span class="ctitle">가법 Holt-Winters</span><span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="cneeds">앞 셀: <a data-goto-cell="u3_hw">승법 Holt-Winters</a></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="5" aria-label="R 코드: 가법 Holt-Winters">trd.hw.add &lt;- HoltWinters(TRD, seasonal=&quot;additive&quot;)
 trd.hw.add
 plot(trd.hw.add)
 trd.hw$SSE       # 승법
@@ -551,7 +552,7 @@ trd.hw.add$SSE   # 가법</textarea></div><div class="cstatus" aria-live="polite
 <header class="shead"><div class="sunit">U3 바로 예측</div><h2>적합된 성분</h2></header>
 <div class="sbody two"><div class="lcol">
 <p><code>fitted</code>에는 시점마다 xhat(예측값 X̂), level, trend, season이 들어 있다. 네 그림을 나란히 보면 수준·추세·계절성이 각각 어떻게 갱신되어 왔는지 보인다. 마지막 행은 t = 364의 값이다.</p>
-<div class="cell" id="cell-u3_hwfit" data-cell="u3_hwfit"><div class="chead"><span class="ctitle">적합된 성분</span><span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="cneeds">앞 셀: <a data-goto-cell="u3_hw">승법 Holt-Winters</a></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="2" aria-label="R 코드: 적합된 성분">plot(trd.hw$fitted)      # xhat(예측값 X̂)·level·trend·season
+<div class="cell" id="cell-u3_hwfit" data-cell="u3_hwfit"><div class="chead"><span class="ctitle">적합된 성분</span><span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="cneeds">앞 셀: <a data-goto-cell="u3_hw">승법 Holt-Winters</a></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="2" aria-label="R 코드: 적합된 성분">plot(trd.hw$fitted)      # xhat(예측값 X̂)·level·trend·season
 tail(trd.hw$fitted, 1)   # 마지막 행 (t = 364)</textarea></div><div class="cstatus" aria-live="polite"></div></div>
 </div><div class="rcol"><div class="outpane">
 <div class="oslot" data-out="u3_hwfit"><div class="olabel">적합된 성분</div><div class="ohint">결과</div><div class="out"></div></div>
@@ -564,7 +565,7 @@ tail(trd.hw$fitted, 1)   # 마지막 행 (t = 364)</textarea></div><div class="c
 <header class="shead"><div class="sunit">U3 바로 예측</div><h2>2주 앞 예측</h2></header>
 <div class="sbody two"><div class="lcol">
 <p><code>predict()</code>는 마지막 시점의 a, b, s로 <code>n.ahead</code> 시점 앞까지 예측한다. 주 자료는 하루가 한 시점이라 2*7은 다음 2주다.</p>
-<div class="cell" id="cell-u3_hwpred" data-cell="u3_hwpred"><div class="chead"><span class="ctitle">2주 앞 예측</span><span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="cneeds">앞 셀: <a data-goto-cell="u3_hw">승법 Holt-Winters</a></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="3" aria-label="R 코드: 2주 앞 예측">trd.predict &lt;- predict(trd.hw, n.ahead=2*7)   # 바꿔 보기: n.ahead (2*7 → 4*7)
+<div class="cell" id="cell-u3_hwpred" data-cell="u3_hwpred"><div class="chead"><span class="ctitle">2주 앞 예측</span><span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="cneeds">앞 셀: <a data-goto-cell="u3_hw">승법 Holt-Winters</a></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="3" aria-label="R 코드: 2주 앞 예측">trd.predict &lt;- predict(trd.hw, n.ahead=2*7)   # 바꿔 보기: n.ahead (2*7 → 4*7)
 trd.predict
 ts.plot(TRD, trd.predict, lty=1:2)</textarea></div><div class="cstatus" aria-live="polite"></div></div>
 </div><div class="rcol"><div class="outpane">
@@ -577,8 +578,8 @@ ts.plot(TRD, trd.predict, lty=1:2)</textarea></div><div class="cstatus" aria-liv
 <section class="slide wrap one" id="s-U3-8" data-unit="U3" data-key="U3-8" data-title="정리 · 바로 예측하기" data-ref="강의 3장 p.16" hidden>
 <header class="shead"><div class="sunit">U3 바로 예측</div><h2><span class="pre">정리 · </span>바로 예측하기</h2></header>
 <div class="sbody one">
-<p>평활법의 원리와 주 자료에서 확인한 것.</p>
-<ul><li>평활법은 새 자료가 들어올 때마다 갱신되므로 순차적 분석과 단기 예측에 강하고, U2의 분해법은 구조 이해가 목적이라 예측에는 제한적이다.</li><li>이동평균법은 최근 m개 값에 1/m씩 같은 가중치를 주므로, m에 따라 어떤 값이 들어가느냐로 예측이 바뀐다. 주 자료는 m = 7(마지막 1주)이면 약 314만, m = 3(금·토·일)이면 약 321만으로, 금요일(약 425만)과 평소보다 큰 일요일(약 369만)이 들어간 m = 3 쪽이 조금 더 크다.</li><li>단순지수평활은 추세와 계절성이 없을 때 쓰고, α는 예측오차 제곱합 SSE가 최소가 되도록 자동으로 고른다. 주 자료는 α ≈ 0.334, SSE ≈ 1.197 × 10<sup>15</sup>이고 적합선이 요일 주기의 오르내림을 절반쯤 따라가지만, 추세와 요일 주기가 있어 맞는 방법은 Holt-Winters다.</li><li>α ≈ 0이면 지엽적인 변화에 둔감하고, α ≈ 1이면 적합선이 자료의 오르내림을 거의 그대로 따라간다. 직접 정한 α의 SSE는 자동 선택보다 작을 수 없다: 주 자료는 α = 0.2에서 약 1.223 × 10<sup>15</sup>, α = 0.9에서 약 1.309 × 10<sup>15</sup>다.</li><li>Holt-Winters는 수준 a<sub>t</sub>, 추세 b<sub>t</sub>, 계절성 s<sub>t</sub>를 함께 갱신하고 마지막 시점의 추정치로 예측하므로, 예측선에도 요일 주기가 남는다. 주 자료의 승법 적합은 토(s6 ≈ 0.33)·일(s7 ≈ 0.46)이 평일(약 0.80–0.86)보다 훨씬 작아 주말의 하락이 계절성에 들어 있다.</li><li>적합된 성분은 시점마다 갱신된 추정치다. 주 자료는 level이 원자료의 수준을 따라 오르내리고(6주째와 22주째 전후가 높다), trend는 거래 횟수에 비해 아주 작아 0 근처에 머문다.</li><li>예측의 수준은 마지막 시점의 수준 추정치 a가 정한다. 주 자료는 마지막 일요일(약 369만)이 다른 일요일(최근 20주 중앙값 약 145만)보다 훨씬 커서 a가 약 497만에서 약 673만으로 올랐고, 다음 2주 평일 예측(약 544만–596만)도 마지막 주 평일보다 높다.</li><li>요일 주기의 폭이 수준에 비례하는 주 자료에는 U2에서 본 대로 승법이 맞다. SSE도 승법 약 6.85 × 10<sup>14</sup>, 가법 약 7.25 × 10<sup>14</sup>로 승법 쪽이 작다.</li></ul>
+<p>평활법의 원리.</p>
+<ul><li>평활법은 과거값들의 가중평균으로 변동을 줄여 패턴을 보고 다음 값을 예측한다. 새 자료가 들어올 때마다 갱신되므로 순차적 분석과 단기 예측에 강하다.</li><li>이동평균법은 최근 m개 값에 1/m씩 같은 가중치를 준다. m이 작으면 최근 값에 민감하고, m이 크면 매끈하지만 변화의 반영이 느리다.</li><li>단순지수평활은 추세와 계절성이 없을 때 쓴다. a<sub>t</sub> = αX<sub>t</sub> + (1 − α)a<sub>t−1</sub>로 수준을 갱신하며, 과거로 갈수록 가중치가 지수적으로 줄어든다(EWMA).</li><li>α ≈ 0이면 평활 효과가 커서 지엽적 변화에 둔감하고, α ≈ 1이면 적합선이 자료를 거의 그대로 따라간다. α는 예측오차 제곱합(SSE)이 최소가 되도록 고르므로, 직접 정한 α의 SSE는 자동 선택보다 작을 수 없다.</li><li>Holt-Winters는 수준 a<sub>t</sub>, 추세 b<sub>t</sub>, 계절성 s<sub>t</sub>를 함께 갱신한다. 계절변동의 폭이 수준에 비례하면 승법, 무관하면 가법이다.</li><li>예측은 마지막 시점의 추정치 a, b, s로 만든다. 수준 a가 예측의 높이를 정하고, s가 주기마다 되풀이되어 예측선에 계절 모양이 남는다.</li><li>출력의 Coefficients a, b, s1–s<sub>p</sub>는 마지막 시점의 추정치이고, fitted에는 시점마다 갱신된 xhat·level·trend·season이 들어 있다.</li></ul>
 <p>평활법은 다음 값을 바로 내놓지만 값들 사이의 관계는 말하지 않으므로, 다음 단원은 그 관계를 재는 자기상관이다.</p>
 </div>
 </section>
@@ -594,7 +595,7 @@ ts.plot(TRD, trd.predict, lty=1:2)</textarea></div><div class="cstatus" aria-liv
 <header class="shead"><div class="sunit">U4 관계 재기</div><h2>그림으로 보는 평균과 분산</h2></header>
 <div class="sbody two"><div class="lcol">
 <p>정상시계열의 경로는 어떤 값을 중심으로 일정한 범위 안에서 움직인다. 그래서 그림으로 조건 ①(평균)과 ②(분산)은 볼 수 있지만, 조건 ③(시차 h의 상관)은 확인하기 어렵다. 그림으로 분명하지 않은 것은 단위근 검정으로 판단한다.</p>
-<div class="cell" id="cell-u4_plot" data-cell="u4_plot"><div class="chead"><span class="ctitle">그림으로 평균과 분산 보기</span><span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="1" aria-label="R 코드: 그림으로 평균과 분산 보기">plot(TRD)</textarea></div><div class="cstatus" aria-live="polite"></div></div>
+<div class="cell" id="cell-u4_plot" data-cell="u4_plot"><div class="chead"><span class="ctitle">그림으로 평균과 분산 보기</span><span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="1" aria-label="R 코드: 그림으로 평균과 분산 보기">plot(TRD)</textarea></div><div class="cstatus" aria-live="polite"></div></div>
 </div><div class="rcol"><div class="outpane">
 <div class="oslot" data-out="u4_plot"><div class="olabel">그림으로 평균과 분산 보기</div><div class="ohint">결과</div><div class="out"></div></div>
 </div>
@@ -605,7 +606,7 @@ ts.plot(TRD, trd.predict, lty=1:2)</textarea></div><div class="cstatus" aria-liv
 <header class="shead"><div class="sunit">U4 관계 재기</div><h2>시차 1 상관</h2></header>
 <div class="sbody two"><div class="lcol">
 <p>두 변수의 상관계수는 ρ = Corr(X, Y) = Cov(X, Y) / (√Var(X)·√Var(Y))다. 쌍 (X<sub>1</sub>, Y<sub>1</sub>), ⋯, (X<sub>n</sub>, Y<sub>n</sub>)에서 ρ̂ = Σ(X<sub>i</sub> − X̄)(Y<sub>i</sub> − Ȳ) / (√Σ(X<sub>i</sub> − X̄)²·√Σ(Y<sub>i</sub> − Ȳ)²)로 추정한다. 시차 1의 상관 Corr(X<sub>t</sub>, X<sub>t+1</sub>)은 쌍 (X<sub>1</sub>, X<sub>2</sub>), ⋯, (X<sub>363</sub>, X<sub>364</sub>)에 <code>cor()</code>를 쓴 것이다.</p>
-<div class="cell" id="cell-u4_cor" data-cell="u4_cor"><div class="chead"><span class="ctitle">시차 1 상관</span><span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="2" aria-label="R 코드: 시차 1 상관">cor(TRD[1:363], TRD[2:364])     # 바꿔 보기: 시차 (1:363, 2:364 → 1:357, 8:364)
+<div class="cell" id="cell-u4_cor" data-cell="u4_cor"><div class="chead"><span class="ctitle">시차 1 상관</span><span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="2" aria-label="R 코드: 시차 1 상관">cor(TRD[1:363], TRD[2:364])     # 바꿔 보기: 시차 (1:363, 2:364 → 1:357, 8:364)
 plot(TRD[1:363], TRD[2:364])    # 가로축 X_t, 세로축 X_{t+1}</textarea></div><div class="cstatus" aria-live="polite"></div></div>
 </div><div class="rcol"><div class="outpane">
 <div class="oslot" data-out="u4_cor"><div class="olabel">시차 1 상관</div><div class="ohint">결과</div><div class="out"></div></div>
@@ -619,19 +620,19 @@ plot(TRD[1:363], TRD[2:364])    # 가로축 X_t, 세로축 X_{t+1}</textarea></d
 <div class="sbody two"><div class="lcol">
 <p>정상시계열의 <b>자기상관함수</b>(ACF)는 ρ<sub>h</sub> = Corr(X<sub>t</sub>, X<sub>t+h</sub>) = γ<sub>h</sub> / γ<sub>0</sub>이고, γ<sub>h</sub> = Cov(X<sub>t</sub>, X<sub>t+h</sub>)는 자기공분산함수다 (ρ<sub>0</sub> = 1). 쌍 (X<sub>1</sub>, X<sub>1+h</sub>), ⋯, (X<sub>n−h</sub>, X<sub>n</sub>)으로 표본자기상관함수(sample ACF) ρ̂<sub>h</sub> = Σ(X<sub>t</sub> − X̄)(X<sub>t+h</sub> − X̄) / Σ(X<sub>t</sub> − X̄)²를 구한다. X<sub>1</sub>, ⋯, X<sub>n</sub>이 i.i.d.(서로 독립이고 분포가 같음)이면 ρ̂<sub>h</sub> ≈ N(0, 1/n)이라, ρ̂<sub>h</sub>가 ±1.96/√n 안에 있으면 H<sub>0</sub>: ρ<sub>h</sub> = 0을 기각할 수 없다.</p>
 <p>시차 h에 따라 ρ̂<sub>h</sub>를 그린 그림이 <b>correlogram</b>이다. 정상시계열의 ACF는 시차가 커질수록 지수적으로 급격히 감소하고, 비정상시계열의 ACF는 1에서 천천히 감소한다. 주기 길이의 시차에 peak가 있으면 그 주기의 계절성이다.</p>
-<div class="cell" id="cell-u4_acf" data-cell="u4_acf"><div class="chead"><span class="ctitle">correlogram</span><span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="1" aria-label="R 코드: correlogram">acf(TRD)</textarea></div><div class="cstatus" aria-live="polite"></div></div>
+<div class="cell" id="cell-u4_acf" data-cell="u4_acf"><div class="chead"><span class="ctitle">correlogram</span><span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="1" aria-label="R 코드: correlogram">acf(TRD)</textarea></div><div class="cstatus" aria-live="polite"></div></div>
 </div><div class="rcol"><div class="outpane">
 <div class="oslot" data-out="u4_acf"><div class="olabel">correlogram</div><div class="ohint">결과</div><div class="out"></div></div>
 </div>
 <p class="note">가로축 1.0이 시차 7일(한 주기), 0.143(= 1/7)이 시차 1일이다. 세로축이 ρ̂<sub>h</sub>이고 파란색 점선이 ±1.96/√n이다.</p>
-<details class="more"><summary>ρ̂<sub>h</sub>를 숫자로 보면</summary><div class="morebody"><p><code>plot=FALSE</code>를 주면 그림 대신 값을 출력한다. 시차는 주기 단위라 1일이 0.143(= 1/7)다.</p><div class="cell" id="cell-u4_acfval" data-cell="u4_acfval"><div class="chead"><span class="ctitle">ACF 값</span><span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="1" aria-label="R 코드: ACF 값">acf(TRD, plot=FALSE)            # 시차 0, 1/7, 2/7, … 의 표본 ACF</textarea></div><div class="cstatus" aria-live="polite"></div><div class="out"></div></div><p class="note">시차 0.143의 값이 ρ̂<sub>1</sub>이고, <code>cor(TRD[1:363], TRD[2:364])</code>와 거의 같다(약 0.6463과 0.6464). 조금 다른 이유는 표본자기상관함수가 전체 평균 X̄ 하나와 전체 제곱합 Σ(X<sub>t</sub> − X̄)²를 쓰고, <code>cor()</code>는 두 범위의 평균과 제곱합을 따로 쓰기 때문이다.</p></div></details>
+<details class="more"><summary>ρ̂<sub>h</sub>를 숫자로 보면</summary><div class="morebody"><p><code>plot=FALSE</code>를 주면 그림 대신 값을 출력한다. 시차는 주기 단위라 1일이 0.143(= 1/7)다.</p><div class="cell" id="cell-u4_acfval" data-cell="u4_acfval"><div class="chead"><span class="ctitle">ACF 값</span><span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="1" aria-label="R 코드: ACF 값">acf(TRD, plot=FALSE)            # 시차 0, 1/7, 2/7, … 의 표본 ACF</textarea></div><div class="cstatus" aria-live="polite"></div><div class="out"></div></div><p class="note">시차 0.143의 값이 ρ̂<sub>1</sub>이고, <code>cor(TRD[1:363], TRD[2:364])</code>와 거의 같다(약 0.6463과 0.6464). 조금 다른 이유는 표본자기상관함수가 전체 평균 X̄ 하나와 전체 제곱합 Σ(X<sub>t</sub> − X̄)²를 쓰고, <code>cor()</code>는 두 범위의 평균과 제곱합을 따로 쓰기 때문이다.</p></div></details>
 </div></div>
 </section>
 <section class="slide two" id="s-U4-5" data-unit="U4" data-key="U4-5" data-title="단위근 검정" data-ref="강의 2장 p.17" hidden>
 <header class="shead"><div class="sunit">U4 관계 재기</div><h2>단위근 검정</h2></header>
 <div class="sbody two"><div class="lcol">
 <p><b>단위근</b>이 있는 시계열은 확률보행(U5)처럼 충격이 쌓여 비정상이다. KPSS 검정은 정상성이 귀무가설이고, <code>null="Trend"</code>는 결정적 추세를 허용한 채 정상성(trend stationary)을 검정한다. ADF 검정은 단위근 존재가 귀무가설이라, 귀무가설이 반대인 KPSS와 함께 읽어 결론을 맞춘다.</p>
-<div class="cell" id="cell-u4_unit" data-cell="u4_unit"><div class="chead"><span class="ctitle">KPSS와 ADF</span><span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="4" aria-label="R 코드: KPSS와 ADF">library(tseries)
+<div class="cell" id="cell-u4_unit" data-cell="u4_unit"><div class="chead"><span class="ctitle">KPSS와 ADF</span><span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="4" aria-label="R 코드: KPSS와 ADF">library(tseries)
 kpss.test(TRD)                  # H0: 수준 정상성
 kpss.test(TRD, null=&quot;Trend&quot;)    # H0: 추세 정상성
 adf.test(TRD)                   # H0: 단위근 존재</textarea></div><div class="cstatus" aria-live="polite"></div></div>
@@ -646,7 +647,7 @@ adf.test(TRD)                   # H0: 단위근 존재</textarea></div><div clas
 <header class="shead"><div class="sunit">U4 관계 재기</div><h2>QQQ에 같은 도구를</h2></header>
 <div class="sbody two"><div class="lcol">
 <p>U1의 그림에서 QQQ의 추세는 예측할 수 없는 시점에 방향이 바뀌는 확률적 추세로 보였다. 비정상 자료의 경로는 둘이다: 결정적 추세 → 회귀모형, 확률적 추세 → ARIMA 모형. KPSS(trend)까지 기각되고 ADF가 기각되지 않으면 확률적 추세다.</p>
-<div class="cell" id="cell-u4_qqq" data-cell="u4_qqq"><div class="chead"><span class="ctitle">QQQ의 ACF와 단위근 검정</span><span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="5" aria-label="R 코드: QQQ의 ACF와 단위근 검정">library(tseries)
+<div class="cell" id="cell-u4_qqq" data-cell="u4_qqq"><div class="chead"><span class="ctitle">QQQ의 ACF와 단위근 검정</span><span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="5" aria-label="R 코드: QQQ의 ACF와 단위근 검정">library(tseries)
 acf(QQQ)
 kpss.test(QQQ)                  # H0: 수준 정상성
 kpss.test(QQQ, null=&quot;Trend&quot;)    # H0: 추세 정상성
@@ -661,8 +662,8 @@ adf.test(QQQ)                   # H0: 단위근 존재</textarea></div><div clas
 <section class="slide wrap one" id="s-U4-7" data-unit="U4" data-key="U4-7" data-title="정리 · 관계 재기" data-ref="강의 2장 p.18–22" hidden>
 <header class="shead"><div class="sunit">U4 관계 재기</div><h2><span class="pre">정리 · </span>관계 재기</h2></header>
 <div class="sbody one">
-<p>정상성 판단의 원리와 두 자료에서 확인한 것.</p>
-<ul><li>정상시계열은 평균, 분산, 시차 h의 상관이 시점에 관계없이 같다. 그림으로는 평균과 분산(조건 ①②)을 볼 수 있고, 주 자료는 평균이 6주째까지 오르다 그 뒤 내려오고 변동폭도 수준에 따라 달라서 조건 ①②가 의심스럽다.</li><li>시차 h의 상관은 쌍 (X<sub>t</sub>, X<sub>t+h</sub>)에 <code>cor()</code>를 쓴 것이다. 주 자료는 시차 1, 2, 7의 상관이 약 0.65, 0.42, 0.60으로, 같은 요일끼리인 시차 7이 시차 2보다 큰 것은 요일 주기 때문이다.</li><li>ACF가 급격히 감소하면 정상, 1에서 천천히 감소하면 비정상, 주기 길이의 시차에 peak가 있으면 계절성이다. 주 자료는 가로축 1, 2, 3(7·14·21일)의 peak(약 0.59, 0.42, 0.33)가 요일 주기이고 높이가 천천히 줄지만, peak 사이는 점선 근처까지 내려가 그림만으로는 판단이 분명하지 않다.</li><li>KPSS는 정상성이, ADF는 단위근 존재가 귀무가설이라 함께 쓴다. 주 자료는 KPSS(level) p &lt; 0.01 기각, KPSS(trend) p &gt; 0.1 기각 못 함, ADF p &lt; 0.01 기각으로, 수준은 일정하지 않지만 결정적 추세를 허용하면 정상이라, 추세가 결정적 추세라는 판정이다.</li><li>결정적 추세를 허용해도 정상이 아니면(KPSS(trend) 기각, ADF 기각 못 함) 확률적 추세다. QQQ는 ACF가 1에서 천천히 감소하고, KPSS(level)과 KPSS(trend)를 모두 기각하며(둘 다 p &lt; 0.01) ADF는 기각하지 못해(출력 p = 0.99) 금융 시계열에 흔한 확률적 추세다.</li><li>시계열분석은 변수들 간의 관계를 모형화한다. 모형화는 식별(시계열 그림·ACF·PACF로 모형과 차수를 잠정적으로 정함) → 추정(최소제곱법·최대우도법) → 진단(모수의 유의성 검정·잔차분석)의 세 단계이고, 정답인 모형은 하나가 아니다.</li><li>식별의 첫 갈림길이 정상성이라, 정상이면 ARMA 모형(U5·U6), 비정상이고 결정적 추세면 회귀모형(U7·U8), 확률적 추세면 ARIMA 모형이다. 주 자료는 회귀모형으로 가고, QQQ는 ARIMA 경로다.</li></ul>
+<p>정상성과 자기상관의 원리.</p>
+<ul><li>시계열은 표본경로가 하나뿐이라 정상성을 가정한다. 정상시계열은 평균, 분산, 시차 h의 상관이 시점에 관계없이 같다.</li><li>그림으로는 평균과 분산(조건 ①②)을 본다. 정상시계열의 경로는 어떤 값을 중심으로 일정한 범위 안에서 움직인다.</li><li>시차 h의 상관은 쌍 (X<sub>t</sub>, X<sub>t+h</sub>)의 상관계수이고, 시차에 따라 그린 표본 ACF가 correlogram이다. 점선 ±1.96/√n 안의 막대는 0과 다르다고 할 수 없다.</li><li>ACF가 시차에 따라 급격히 감소하면 정상, 1에서 천천히 감소하면 비정상이다. 주기 길이의 시차마다 봉우리가 있으면 계절성이다. <code>acf</code> 그림의 가로축 1은 한 주기(frequency)다.</li><li>KPSS는 정상성이 귀무가설이고(level은 수준 정상, trend는 결정적 추세를 허용한 추세 정상), ADF는 단위근 존재가 귀무가설이다. 귀무가설이 반대이므로 함께 써서 판단한다.</li><li>KPSS(trend)를 기각하지 못하고 ADF가 기각하면 결정적 추세, KPSS(trend)를 기각하고 ADF가 기각하지 못하면 확률적 추세다.</li><li>모형화는 식별(그림·ACF·PACF로 모형과 차수를 잠정 결정) → 추정 → 진단(유의성 검정·잔차분석)의 세 단계다. 정상이면 ARMA, 비정상이고 결정적 추세면 회귀모형, 확률적 추세면 ARIMA로 간다. 정답인 모형은 하나가 아니다.</li></ul>
 <p>다음 단원은 ARMA 모형의 재료인 백색잡음·확률보행·AR 과정이다.</p>
 </div>
 </section>
@@ -679,7 +680,7 @@ adf.test(QQQ)                   # H0: 단위근 존재</textarea></div><div clas
 <div class="sbody two"><div class="lcol">
 <p>백색잡음은 ① E(X<sub>t</sub>) = 0 ② Var(X<sub>t</sub>) = σ² &lt; ∞ ③ Corr(X<sub>t</sub>, X<sub>s</sub>) = 0 (t ≠ s)인 시계열이고, WN(0, σ²)로 적는다. 평균과 분산이 t에 무관하고 다른 시점의 값과 상관이 없으므로 정상시계열이다. 확률보행과 AR 모형은 이 백색잡음을 오차항 ε<sub>t</sub>로 써서 만든다.</p>
 <p>ACF의 점선은 ±1.96/√n, 곧 상관이 0일 때 ρ̂<sub>h</sub>가 들어가는 약 95% 범위다.</p>
-<div class="cell" id="cell-u5_wn" data-cell="u5_wn"><div class="chead"><span class="ctitle">백색잡음 모의자료와 ACF</span><span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="3" aria-label="R 코드: 백색잡음 모의자료와 ACF">X &lt;- rnorm(200, 0, 5)       # 바꿔 보기: 자료 개수 (200 → 50)
+<div class="cell" id="cell-u5_wn" data-cell="u5_wn"><div class="chead"><span class="ctitle">백색잡음 모의자료와 ACF</span><span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="3" aria-label="R 코드: 백색잡음 모의자료와 ACF">X &lt;- rnorm(200, 0, 5)       # 바꿔 보기: 자료 개수 (200 → 50)
 plot(X, type=&quot;l&quot;)
 acf(X)</textarea></div><div class="cstatus" aria-live="polite"></div></div>
 </div><div class="rcol"><div class="outpane">
@@ -694,7 +695,7 @@ acf(X)</textarea></div><div class="cstatus" aria-live="polite"></div></div>
 <header class="shead"><div class="sunit">U5 만드는 규칙</div><h2>확률보행</h2></header>
 <div class="sbody two"><div class="lcol">
 <p>확률보행은 X<sub>t</sub> = X<sub>t−1</sub> + ε<sub>t</sub>, ε<sub>t</sub> ~ WN(0, σ²), X<sub>0</sub> = 0이다. 풀어 쓰면 X<sub>t</sub> = ε<sub>1</sub> + ⋯ + ε<sub>t</sub>, 곧 오차항들의 누적이다. E(X<sub>t</sub>) = 0이지만 Var(X<sub>t</sub>) = tσ²로 t에 따라 커지고, Corr(X<sub>t</sub>, X<sub>t+h</sub>) = √(t/(t + h))도 t에 의존하므로 비정상시계열이다. ACF는 1에서 천천히 감소한다.</p>
-<div class="cell" id="cell-u5_rw" data-cell="u5_rw"><div class="chead"><span class="ctitle">확률보행 모의자료와 ACF</span><span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="10" aria-label="R 코드: 확률보행 모의자료와 ACF">RW &lt;- function(n){
+<div class="cell" id="cell-u5_rw" data-cell="u5_rw"><div class="chead"><span class="ctitle">확률보행 모의자료와 ACF</span><span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="10" aria-label="R 코드: 확률보행 모의자료와 ACF">RW &lt;- function(n){
   X &lt;- rep(0, n)
   for (i in 1:(n-1)){
     X[i+1] &lt;- X[i] + rnorm(1)
@@ -717,7 +718,7 @@ acf(RW)</textarea></div><div class="cstatus" aria-live="polite"></div></div>
 <div class="sbody two"><div class="lcol">
 <p>AR(p) 모형은 X<sub>t</sub> = φ<sub>1</sub>X<sub>t−1</sub> + ⋯ + φ<sub>p</sub>X<sub>t−p</sub> + ε<sub>t</sub>, ε<sub>t</sub> ~ WN(0, σ²)이고, φ<sub>1</sub>, ⋯, φ<sub>p</sub>는 자기회귀계수다. 특성방정식 φ(x) = 1 − φ<sub>1</sub>x − ⋯ − φ<sub>p</sub>x<sup>p</sup> = 0의 모든 해의 절대값이 1보다 크면(해가 단위원 밖에 있으면) 정상이다. AR(1)은 X<sub>t</sub> = φX<sub>t−1</sub> + ε<sub>t</sub>이고 해가 x = 1/φ이므로 정상성 조건은 ∣φ∣ &lt; 1이다. φ = 1이면 확률보행과 같아 비정상이다.</p>
 <p>∣φ∣ &lt; 1이면 E(X<sub>t</sub>) = 0, Var(X<sub>t</sub>) = σ²/(1 − φ²)로 t에 무관하고, Corr(X<sub>t</sub>, X<sub>t+h</sub>) = φ<sup>h</sup>다. ACF는 ρ<sub>h</sub> = φ<sup>h</sup>로 지수적으로 감소하고, φ &lt; 0이면 부호가 번갈아 바뀐다.</p>
-<div class="cell" id="cell-u5_ar" data-cell="u5_ar"><div class="chead"><span class="ctitle">φ = 0.5인 AR(1) 모의자료와 ACF</span><span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="10" aria-label="R 코드: φ = 0.5인 AR(1) 모의자료와 ACF">AR &lt;- function(phi, n){
+<div class="cell" id="cell-u5_ar" data-cell="u5_ar"><div class="chead"><span class="ctitle">φ = 0.5인 AR(1) 모의자료와 ACF</span><span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="10" aria-label="R 코드: φ = 0.5인 AR(1) 모의자료와 ACF">AR &lt;- function(phi, n){
   X &lt;- rep(0, n)
   for (i in 1:(n-1)){
     X[i+1] &lt;- phi*X[i] + rnorm(1)
@@ -732,7 +733,7 @@ acf(X)</textarea></div><div class="cstatus" aria-live="polite"></div></div>
 </div>
 <p class="note"><code>phi*X[i] + rnorm(1)</code>은 X<sub>t</sub> = φX<sub>t−1</sub> + ε<sub>t</sub>다: <code>phi*X[i]</code>가 φX<sub>t−1</sub>, <code>rnorm(1)</code>이 ε<sub>t</sub>다.</p>
 <p class="note"><code>AR(1, 200)</code>은 φ = 1이라 확률보행 셀의 <code>RW(200)</code>과 같은 규칙이다. <code>AR(-0.8, 200)</code>은 φ &lt; 0이라 ACF의 부호가 ρ<sub>h</sub> = (−0.8)<sup>h</sup>로 번갈아 바뀐다.</p>
-<details class="more"><summary>분산과 상관을 식과 견주면</summary><div class="morebody"><p><code>AR</code> 함수는 평균 0, 표준편차 1인 정규난수 <code>rnorm(1)</code>을 더하므로 σ² = 1이다. 긴 모의자료(n = 10000)로 구한 분산과 시차 1 상관을 식의 값 σ²/(1 − φ²), φ와 견준다.</p><div class="cell" id="cell-u5_arvar" data-cell="u5_arvar"><div class="chead"><span class="ctitle">AR(1)의 분산과 시차 1 상관</span><span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="cneeds">앞 셀: <a data-goto-cell="u5_ar">φ = 0.5인 AR(1) 모의자료와 ACF</a></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="6" aria-label="R 코드: AR(1)의 분산과 시차 1 상관">phi &lt;- 0.5                       # 바꿔 보기: φ (0.5 → 0.9)
+<details class="more"><summary>분산과 상관을 식과 견주면</summary><div class="morebody"><p><code>AR</code> 함수는 평균 0, 표준편차 1인 정규난수 <code>rnorm(1)</code>을 더하므로 σ² = 1이다. 긴 모의자료(n = 10000)로 구한 분산과 시차 1 상관을 식의 값 σ²/(1 − φ²), φ와 견준다.</p><div class="cell" id="cell-u5_arvar" data-cell="u5_arvar"><div class="chead"><span class="ctitle">AR(1)의 분산과 시차 1 상관</span><span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="cneeds">앞 셀: <a data-goto-cell="u5_ar">φ = 0.5인 AR(1) 모의자료와 ACF</a></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="6" aria-label="R 코드: AR(1)의 분산과 시차 1 상관">phi &lt;- 0.5                       # 바꿔 보기: φ (0.5 → 0.9)
 X &lt;- AR(phi, 10000)
 sd(X)^2                          # 자료로 구한 Var(X_t)
 1/(1-phi^2)                      # Var(X_t) = σ²/(1 − φ²), σ² = 1
@@ -744,22 +745,22 @@ phi                              # Corr(X_t, X_{t+1}) = φ</textarea></div><div 
 <header class="shead"><div class="sunit">U5 만드는 규칙</div><h2>QQQ와 확률보행 견주기</h2></header>
 <div class="sbody two"><div class="lcol">
 <p>주어진 자료의 모형은 그 자료와 비슷한 형태를 만들어 내는 모형 중에서 고른다. 자료의 그림과 ACF를 세 모형 옆에 놓고 가장 비슷한 것을 찾는다. 비정상이면 결정적 추세는 회귀모형(U7·U8), 확률적 추세는 ARIMA 모형으로 간다. QQQ는 U4의 단위근 검정에서 확률적 추세 쪽이었다.</p>
-<div class="cell" id="cell-u5_qqq" data-cell="u5_qqq"><div class="chead"><span class="ctitle">QQQ와 확률보행</span><span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="cneeds">앞 셀: <a data-goto-cell="u5_rw">확률보행 모의자료와 ACF</a></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="3" aria-label="R 코드: QQQ와 확률보행">par(mfrow=c(2,2))
+<div class="cell" id="cell-u5_qqq" data-cell="u5_qqq"><div class="chead"><span class="ctitle">QQQ와 확률보행</span><span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="cneeds">앞 셀: <a data-goto-cell="u5_rw">확률보행 모의자료와 ACF</a></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="3" aria-label="R 코드: QQQ와 확률보행">par(mfrow=c(2,2))
 plot(QQQ); acf(QQQ)                  # 위: QQQ 월말 종가
 plot(RW, type=&quot;l&quot;); acf(RW)          # 아래: 확률보행 모의자료 RW</textarea></div><div class="cstatus" aria-live="polite"></div></div>
 </div><div class="rcol"><div class="outpane">
 <div class="oslot" data-out="u5_qqq"><div class="olabel">QQQ와 확률보행</div><div class="ohint">결과</div><div class="out"></div></div>
 </div>
 <p class="note"><code>par(mfrow=c(2,2))</code>는 그림 네 개를 2행 2열로 놓는다. 위 줄이 QQQ의 경로와 ACF, 아래 줄이 확률보행 셀에서 만든 <code>RW</code>의 경로와 ACF다.</p>
-<details class="more"><summary>주 자료의 ACF를 다시 보면</summary><div class="morebody"><div class="cell" id="cell-u5_trdacf" data-cell="u5_trdacf"><div class="chead"><span class="ctitle">주 자료의 ACF</span><span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="1" aria-label="R 코드: 주 자료의 ACF">acf(TRD)                    # 가로축 1 = 7일</textarea></div><div class="cstatus" aria-live="polite"></div><div class="out"></div></div><p class="note">주 자료는 <code>freq=7</code>이라 ACF의 가로축 1이 7일(한 주)이다.</p></div></details>
+<details class="more"><summary>주 자료의 ACF를 다시 보면</summary><div class="morebody"><div class="cell" id="cell-u5_trdacf" data-cell="u5_trdacf"><div class="chead"><span class="ctitle">주 자료의 ACF</span><span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="1" aria-label="R 코드: 주 자료의 ACF">acf(TRD)                    # 가로축 1 = 7일</textarea></div><div class="cstatus" aria-live="polite"></div><div class="out"></div></div><p class="note">주 자료는 <code>freq=7</code>이라 ACF의 가로축 1이 7일(한 주)이다.</p></div></details>
 </div></div>
 </section>
 <section class="slide wrap one" id="s-U5-6" data-unit="U5" data-key="U5-6" data-title="정리 · 만드는 규칙" data-ref="강의 4장 p.2–23" hidden>
 <header class="shead"><div class="sunit">U5 만드는 규칙</div><h2><span class="pre">정리 · </span>만드는 규칙</h2></header>
 <div class="sbody one">
-<p>세 모형의 원리와 모의자료·QQQ·주 자료에서 확인한 것.</p>
-<ul><li>백색잡음은 평균 0, 분산 σ², 다른 시점과 상관 0인 정상시계열이고, 확률보행과 AR의 오차항 ε<sub>t</sub>가 된다. 모의자료의 경로는 0을 중심으로 일정한 범위 안에서 오르내리며 시간이 가도 퍼지지 않고, ACF는 시차 0에서만 1이고 시차 1부터는 거의 모두 점선 안이다.</li><li>확률보행은 오차항의 누적이라 Var(X<sub>t</sub>) = tσ²로 커지는 비정상시계열이다. 모의자료의 경로는 실행마다 달라도 시간이 갈수록 0에서 멀리 퍼지고, ACF는 늘 1에서 천천히 감소하는 같은 모양이다.</li><li>AR(1)은 ∣φ∣ &lt; 1이면 정상이고 ACF가 ρ<sub>h</sub> = φ<sup>h</sup>로 지수적으로 감소하는데, φ = −0.8이면 부호가 번갈아 바뀌며 감소하고 경로는 매 시점 위아래로 튄다. φ = 1이면 확률보행과 같아 경로가 퍼지고 ACF가 1에서 천천히 감소한다.</li><li>정상 AR(1)의 Var(X<sub>t</sub>) = σ²/(1 − φ²)와 Corr(X<sub>t</sub>, X<sub>t+1</sub>) = φ는 t에 무관하다. φ = 0.5, σ² = 1인 긴 모의자료(n = 10000)의 분산과 시차 1 상관은 식의 값 1.33과 0.5에 가깝고, φ = 0.9이면 분산이 1/(1 − 0.81) ≈ 5.26으로 커진다.</li><li>주어진 자료의 모형은 그 자료와 비슷한 형태를 만들어 내는 모형 중에서 고르며, 확률보행은 확률적 추세의 가장 단순한 모형이다. QQQ는 경로가 예고 없이 방향을 바꾸며 퍼지고 ACF가 1에서 천천히 감소해 확률보행과 비슷한 비정상시계열이고, U4의 단위근 검정에서도 확률적 추세 쪽이라 ARIMA 모형으로 간다.</li><li>주 자료의 ACF는 세 모형 어느 것과도 꼭 같지 않고, 가로축 1(7일)마다 봉우리가 있고 그 사이는 점선 근처까지 내려가는 남은 계절성이 보인다. 수준은 일정하지 않지만 결정적 추세를 허용하면 정상이라(U4) 계절 항과 추세를 넣은 회귀모형(U7·U8)으로 간다.</li></ul>
-<p>다음 단원은 정상인 AR 모형을 주 자료의 주간 평균에 식별·추정·진단하는 모형화의 3단계와 예측이다.</p>
+<p>세 모형의 원리.</p>
+<ul><li>시계열모형은 값들 사이의 관계를 식으로 적은 규칙이다. 주어진 자료와 비슷한 형태를 만들어 내는 모형을 후보로 고른다.</li><li>백색잡음 WN(0, σ²)은 평균 0, 분산 σ², 다른 시점과 상관 0인 정상시계열이다. 경로는 일정한 범위 안에서 오르내리고, ACF는 시차 0에서만 1이다.</li><li>확률보행 X<sub>t</sub> = X<sub>t−1</sub> + ε<sub>t</sub>는 오차항의 누적이다. Var(X<sub>t</sub>) = tσ²로 커지는 비정상시계열이라 경로가 시간이 갈수록 퍼지고, ACF는 1에서 천천히 감소한다.</li><li>AR(1) X<sub>t</sub> = φX<sub>t−1</sub> + ε<sub>t</sub>는 ∣φ∣ &lt; 1이면 정상이고, Var(X<sub>t</sub>) = σ²/(1 − φ²), Corr(X<sub>t</sub>, X<sub>t+h</sub>) = φ<sup>h</sup>다. ACF는 지수적으로 감소하고, φ &lt; 0이면 부호가 번갈아 바뀐다.</li><li>AR(p)의 정상성 조건은 특성방정식 1 − φ<sub>1</sub>x − ⋯ − φ<sub>p</sub>x<sup>p</sup> = 0의 모든 해의 절대값이 1보다 큰 것이다. φ = 1이면 확률보행과 같아 비정상이다.</li><li>ACF의 점선 ±1.96/√n은 상관이 0일 때 막대가 들어가는 약 95% 범위다. 자료가 적을수록 넓고, 모의자료는 실행마다 그림이 달라진다.</li><li>확률적 추세를 가진 자료는 확률보행과 비슷한 경로와 ACF를 보이며 ARIMA 모형으로 간다. 주기 길이마다 봉우리가 남는 ACF는 계절성이 남은 것이다.</li></ul>
+<p>다음 단원은 AR 모형을 식별·추정·진단하는 모형화의 3단계와 예측이다.</p>
 </div>
 </section>
 <section class="slide opener one" id="s-U6-1" data-unit="U6" data-key="U6-1" data-title="AR 모형화: 3단계와 예측" data-ref="강의 4장 p.2, p.24–25, p.43" hidden>
@@ -774,7 +775,7 @@ plot(RW, type=&quot;l&quot;); acf(RW)          # 아래: 확률보행 모의자�
 <header class="shead"><div class="sunit">U6 AR 모형화</div><h2>모의 AR(2) 자료 만들기</h2></header>
 <div class="sbody two"><div class="lcol">
 <p>답을 아는 모의 자료로 세 단계를 연습한다. X<sub>t</sub> = X<sub>t−1</sub> − 0.25X<sub>t−2</sub> + ε<sub>t</sub>는 AR(2)다. 특성방정식 1 − x + 0.25x² = 0의 해는 x = 2로 절대값이 1보다 크므로 정상시계열이다. U5의 AR 함수처럼 앞의 두 값으로 다음 값을 만드는 함수를 쓴다.</p>
-<div class="cell" id="cell-u6_sim" data-cell="u6_sim"><div class="chead"><span class="ctitle">모의 AR(2) 자료 만들기</span><span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="10" aria-label="R 코드: 모의 AR(2) 자료 만들기">set.seed(1)     # 모두 같은 자료로 실습하기 위해
+<div class="cell" id="cell-u6_sim" data-cell="u6_sim"><div class="chead"><span class="ctitle">모의 AR(2) 자료 만들기</span><span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="10" aria-label="R 코드: 모의 AR(2) 자료 만들기">set.seed(1)     # 모두 같은 자료로 실습하기 위해
 AR2 &lt;- function(phi1, phi2, n){
   X &lt;- rep(0, n)
   for (i in 1:(n-2)){
@@ -796,7 +797,7 @@ X[1:5]                       # 앞 5개</textarea></div><div class="cstatus" ari
 <header class="shead"><div class="sunit">U6 AR 모형화</div><h2>식별</h2></header>
 <div class="sbody two"><div class="lcol">
 <p>시차 h의 <b>부분자기상관함수</b>(PACF) φ<sub>hh</sub>는 X<sub>t</sub>와 X<sub>t+h</sub> 사이에 있는 값 X<sub>t+1</sub>, ⋯, X<sub>t+h−1</sub>의 영향을 제거한 뒤의 두 값의 상관계수다. <b>AR(p)의 PACF는 시차 p 이후로 절단</b>되고 ACF는 지수적으로 감소한다. 이것이 AR 모형의 차수를 식별하는 기준이다.</p>
-<div class="cell" id="cell-u6_ident" data-cell="u6_ident"><div class="chead"><span class="ctitle">그림, ACF, PACF로 식별</span><span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="cneeds">앞 셀: <a data-goto-cell="u6_sim">모의 AR(2) 자료 만들기</a></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="3" aria-label="R 코드: 그림, ACF, PACF로 식별">plot(X, type=&quot;l&quot;)
+<div class="cell" id="cell-u6_ident" data-cell="u6_ident"><div class="chead"><span class="ctitle">그림, ACF, PACF로 식별</span><span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="cneeds">앞 셀: <a data-goto-cell="u6_sim">모의 AR(2) 자료 만들기</a></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="3" aria-label="R 코드: 그림, ACF, PACF로 식별">plot(X, type=&quot;l&quot;)
 acf(X)
 pacf(X)</textarea></div><div class="cstatus" aria-live="polite"></div></div>
 </div><div class="rcol"><div class="outpane">
@@ -811,7 +812,7 @@ pacf(X)</textarea></div><div class="cstatus" aria-live="polite"></div></div>
 <div class="sbody two"><div class="lcol">
 <p>추정은 잠정모형의 모수를 자료에서 구하는 단계다. 평균이 μ인 AR(p)는 X<sub>t</sub> − μ = φ<sub>1</sub>(X<sub>t−1</sub> − μ) + ⋯ + φ<sub>p</sub>(X<sub>t−p</sub> − μ) + ε<sub>t</sub>이고, 추정할 모수는 μ, φ<sub>1</sub>, ⋯, φ<sub>p</sub>, σ²다. <code>ar()</code>는 Yule-Walker 방정식(ACF와 모수의 관계식)에 표본 ACF를 넣어 계수를 추정하고, AIC(적합도에 모수 개수의 벌점을 더한 값, 작을수록 좋다)가 가장 작은 차수를 고른다.</p>
 <p>진단의 첫 도구는 모수의 유의성 검정이다. H<sub>0</sub>: φ<sub>i</sub> = 0의 검정통계량은 φ̂<sub>i</sub> / se(φ̂<sub>i</sub>)이고, 절대값이 크면(대략 1.96보다 크면) H<sub>0</sub>를 기각하여 H<sub>1</sub>: φ<sub>i</sub> ≠ 0으로 본다.</p>
-<div class="cell" id="cell-u6_est" data-cell="u6_est"><div class="chead"><span class="ctitle">추정과 유의성 검정</span><span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="cneeds">앞 셀: <a data-goto-cell="u6_sim">모의 AR(2) 자료 만들기</a></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="9" aria-label="R 코드: 추정과 유의성 검정">ar(X)
+<div class="cell" id="cell-u6_est" data-cell="u6_est"><div class="chead"><span class="ctitle">추정과 유의성 검정</span><span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="cneeds">앞 셀: <a data-goto-cell="u6_sim">모의 AR(2) 자료 만들기</a></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="9" aria-label="R 코드: 추정과 유의성 검정">ar(X)
 ar(X)$order                           # AIC로 고른 차수
 ar(X)$ar                              # φ̂_1, φ̂_2
 phi1 &lt;- ar(X)$ar[1]
@@ -831,7 +832,7 @@ phi2/se_phi2                          # H0: φ_2 = 0의 검정통계량</textare
 <header class="shead"><div class="sunit">U6 AR 모형화</div><h2>잔차 진단</h2></header>
 <div class="sbody two"><div class="lcol">
 <p>잠정모형이 적절하다면 잔차(= 관측값 − 추정값)는 오차항 ε<sub>t</sub>와 유사한 성질을 가져야 한다. 잔차의 그림·ACF·PACF로 모형에 대한 가정이 옳은지 판단하고, 잔차가 백색잡음이 될 때까지 계속 모형화한다. 잔차의 ACF·PACF가 모두 점선 안이면 잔차에 남은 자기상관이 없다는 뜻이다. <code>tsdisplay()</code>는 시계열 그림, ACF, PACF를 한 번에 그린다.</p>
-<div class="cell" id="cell-u6_diag" data-cell="u6_diag"><div class="chead"><span class="ctitle">잔차 진단</span><span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="cneeds">앞 셀: <a data-goto-cell="u6_sim">모의 AR(2) 자료 만들기</a></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="3" aria-label="R 코드: 잔차 진단">ar(X)$res[1:5]                  # 잔차 r_t = X_t − X̂_t
+<div class="cell" id="cell-u6_diag" data-cell="u6_diag"><div class="chead"><span class="ctitle">잔차 진단</span><span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="cneeds">앞 셀: <a data-goto-cell="u6_sim">모의 AR(2) 자료 만들기</a></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="3" aria-label="R 코드: 잔차 진단">ar(X)$res[1:5]                  # 잔차 r_t = X_t − X̂_t
 library(forecast)
 tsdisplay(ar(X)$res)            # 잔차의 그림, ACF, PACF</textarea></div><div class="cstatus" aria-live="polite"></div></div>
 </div><div class="rcol"><div class="outpane">
@@ -845,7 +846,7 @@ tsdisplay(ar(X)$res)            # 잔차의 그림, ACF, PACF</textarea></div><d
 <header class="shead"><div class="sunit">U6 AR 모형화</div><h2>예측</h2></header>
 <div class="sbody two"><div class="lcol">
 <p>예측값은 X̂<sub>t+n</sub> = E(X<sub>t+n</sub> ∣ X<sub>1</sub>, ⋯, X<sub>t</sub>)로, 평균제곱오차(MSE)를 최소로 하는 예측이다. AR 모형은 주로 n = 10 정도의 단기(short-term)를 예측하고, 장기(long-term) 예측값은 모형에서 주어지는 평균값으로 수렴한다. <code>predict()</code>는 예측값 <code>pred</code>와 표준오차 <code>se</code>를 주고, 예측값 ± 2 × 표준오차를 예측구간으로 쓴다.</p>
-<div class="cell" id="cell-u6_pred" data-cell="u6_pred"><div class="chead"><span class="ctitle">10시점 앞 예측</span><span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="cneeds">앞 셀: <a data-goto-cell="u6_sim">모의 AR(2) 자료 만들기</a></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="7" aria-label="R 코드: 10시점 앞 예측">p &lt;- predict(ar(X), n.ahead=10)      # 바꿔 보기: n.ahead (10 → 50)
+<div class="cell" id="cell-u6_pred" data-cell="u6_pred"><div class="chead"><span class="ctitle">10시점 앞 예측</span><span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="cneeds">앞 셀: <a data-goto-cell="u6_sim">모의 AR(2) 자료 만들기</a></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="7" aria-label="R 코드: 10시점 앞 예측">p &lt;- predict(ar(X), n.ahead=10)      # 바꿔 보기: n.ahead (10 → 50)
 p.U &lt;- p$pred+2*p$se                 # 예측값 + 2 × 표준오차
 p.L &lt;- p$pred-2*p$se                 # 예측값 − 2 × 표준오차
 plot(X, type=&quot;l&quot;, xlim=c(0,550))     # 가로축은 n.ahead = 50까지 미리 잡아 둔다
@@ -857,7 +858,7 @@ lines(p.U, col=&quot;red&quot;, lty=3)</textarea></div><div class="cstatus" aria
 </div>
 <p class="note"><code>p$pred+2*p$se</code>는 예측값 + 2 × 표준오차, 곧 예측구간의 위쪽 경계다. <code>p$pred-2*p$se</code>가 아래쪽 경계다.</p>
 <p class="note"><code>xlim=c(0,550)</code>은 가로축을 550까지 미리 잡아, n.ahead를 50으로 바꿔도 예측선이 그림 안에 들어오게 한다.</p>
-<details class="more"><summary>AR(1)에서 R이 잔차와 예측값을 구하는 식을 확인하면</summary><div class="morebody"><p>AR(1) X<sub>t</sub> − μ = φ(X<sub>t−1</sub> − μ) + ε<sub>t</sub>에서 잔차는 X̂<sub>1</sub>이 없어 r<sub>1</sub> = NA이고, X̂<sub>2</sub> = (1 − φ̂)μ̂ + φ̂X<sub>1</sub>, r<sub>2</sub> = X<sub>2</sub> − X̂<sub>2</sub>다. 예측값은 X̂<sub>t+1</sub> = (1 − φ̂)μ̂ + φ̂X<sub>t</sub>, X̂<sub>t+2</sub> = (1 − φ̂²)μ̂ + φ̂²X<sub>t</sub>, ⋯, X̂<sub>t+n</sub> = (1 − φ̂<sup>n</sup>)μ̂ + φ̂<sup>n</sup>X<sub>t</sub> → μ̂ (n → ∞)다. U5의 <code>AR</code> 함수로 만든 AR(1) 자료에 이 식을 넣어 <code>ar()</code>·<code>predict()</code>의 결과와 견준다.</p><div class="cell" id="cell-u6_ar1" data-cell="u6_ar1"><div class="chead"><span class="ctitle">AR(1)의 잔차와 예측값을 식으로 구하기</span><span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="cneeds">앞 셀: <a data-goto-cell="u5_ar">φ = 0.5인 AR(1) 모의자료와 ACF</a> <span class="nu">[U5]</span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="10" aria-label="R 코드: AR(1)의 잔차와 예측값을 식으로 구하기">set.seed(10)                          # 모두 같은 자료로 실습하기 위해
+<details class="more"><summary>AR(1)에서 R이 잔차와 예측값을 구하는 식을 확인하면</summary><div class="morebody"><p>AR(1) X<sub>t</sub> − μ = φ(X<sub>t−1</sub> − μ) + ε<sub>t</sub>에서 잔차는 X̂<sub>1</sub>이 없어 r<sub>1</sub> = NA이고, X̂<sub>2</sub> = (1 − φ̂)μ̂ + φ̂X<sub>1</sub>, r<sub>2</sub> = X<sub>2</sub> − X̂<sub>2</sub>다. 예측값은 X̂<sub>t+1</sub> = (1 − φ̂)μ̂ + φ̂X<sub>t</sub>, X̂<sub>t+2</sub> = (1 − φ̂²)μ̂ + φ̂²X<sub>t</sub>, ⋯, X̂<sub>t+n</sub> = (1 − φ̂<sup>n</sup>)μ̂ + φ̂<sup>n</sup>X<sub>t</sub> → μ̂ (n → ∞)다. U5의 <code>AR</code> 함수로 만든 AR(1) 자료에 이 식을 넣어 <code>ar()</code>·<code>predict()</code>의 결과와 견준다.</p><div class="cell" id="cell-u6_ar1" data-cell="u6_ar1"><div class="chead"><span class="ctitle">AR(1)의 잔차와 예측값을 식으로 구하기</span><span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="cneeds">앞 셀: <a data-goto-cell="u5_ar">φ = 0.5인 AR(1) 모의자료와 ACF</a> <span class="nu">[U5]</span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="10" aria-label="R 코드: AR(1)의 잔차와 예측값을 식으로 구하기">set.seed(10)                          # 모두 같은 자료로 실습하기 위해
 X &lt;- AR(0.5, 200)                     # U5의 AR 함수로 만든 AR(1) 자료
 ar(X)                                 # Order selected 1인지 확인
 phi &lt;- ar(X)$ar                       # φ̂
@@ -873,7 +874,7 @@ predict(ar(X), n.ahead=n)$pred        # R의 예측값
 <header class="shead"><div class="sunit">U6 AR 모형화</div><h2>주간 평균의 식별</h2></header>
 <div class="sbody two"><div class="lcol">
 <p>주 자료에는 요일 주기가 있다. 주간 평균(52개)은 요일 주기가 지워진 시계열이라, 여기에 세 단계와 예측을 적용한다. 주간 평균은 U1에서 본 것처럼 추세가 있어 정상시계열은 아니지만, 근사적으로 AR을 적합해 본다.</p>
-<div class="cell" id="cell-u6_wk1" data-cell="u6_wk1"><div class="chead"><span class="ctitle">주간 평균의 그림, ACF, PACF</span><span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="3" aria-label="R 코드: 주간 평균의 그림, ACF, PACF">plot(TRD)
+<div class="cell" id="cell-u6_wk1" data-cell="u6_wk1"><div class="chead"><span class="ctitle">주간 평균의 그림, ACF, PACF</span><span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="3" aria-label="R 코드: 주간 평균의 그림, ACF, PACF">plot(TRD)
 ag &lt;- aggregate(TRD)/7       # 주간 평균 (한 주 = 7일)
 plot(ag); acf(ag); pacf(ag)</textarea></div><div class="cstatus" aria-live="polite"></div></div>
 </div><div class="rcol"><div class="outpane">
@@ -887,7 +888,7 @@ plot(ag); acf(ag); pacf(ag)</textarea></div><div class="cstatus" aria-live="poli
 <header class="shead"><div class="sunit">U6 AR 모형화</div><h2>주간 평균의 추정과 잔차 진단</h2></header>
 <div class="sbody two"><div class="lcol">
 <p><code>ar()</code>이 AIC로 차수를 고르고 Yule-Walker로 계수를 추정한다. 잔차가 백색잡음과 비슷한지 그림·ACF·PACF로 본다.</p>
-<div class="cell" id="cell-u6_wk2" data-cell="u6_wk2"><div class="chead"><span class="ctitle">추정과 잔차 진단</span><span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="cneeds">앞 셀: <a data-goto-cell="u6_wk1">주간 평균의 그림, ACF, PACF</a></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="5" aria-label="R 코드: 추정과 잔차 진단">ar(ag)
+<div class="cell" id="cell-u6_wk2" data-cell="u6_wk2"><div class="chead"><span class="ctitle">추정과 잔차 진단</span><span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="cneeds">앞 셀: <a data-goto-cell="u6_wk1">주간 평균의 그림, ACF, PACF</a></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="5" aria-label="R 코드: 추정과 잔차 진단">ar(ag)
 mean(ag)
 r &lt;- ar(ag)$res
 library(forecast)
@@ -903,7 +904,7 @@ tsdisplay(r)</textarea></div><div class="cstatus" aria-live="polite"></div></div
 <header class="shead"><div class="sunit">U6 AR 모형화</div><h2>주간 평균의 10주 앞 예측</h2></header>
 <div class="sbody two"><div class="lcol">
 <p><code>ar(ag)</code>로 적합된 모형으로 다음 10주를 예측한다. 예측값 ± 2 × 표준오차가 예측구간이다.</p>
-<div class="cell" id="cell-u6_wk3" data-cell="u6_wk3"><div class="chead"><span class="ctitle">10주 앞 예측</span><span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="cneeds">앞 셀: <a data-goto-cell="u6_wk1">주간 평균의 그림, ACF, PACF</a></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="7" aria-label="R 코드: 10주 앞 예측">p &lt;- predict(ar(ag), n.ahead=10)
+<div class="cell" id="cell-u6_wk3" data-cell="u6_wk3"><div class="chead"><span class="ctitle">10주 앞 예측</span><span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="cneeds">앞 셀: <a data-goto-cell="u6_wk1">주간 평균의 그림, ACF, PACF</a></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="7" aria-label="R 코드: 10주 앞 예측">p &lt;- predict(ar(ag), n.ahead=10)
 p.U &lt;- p$pred+2*p$se
 p.L &lt;- p$pred-2*p$se
 plot(ag, ylim=c(-1e6, 9e6), xlim=c(1,62))   # 52주 + 10주, 1e6 = 100만
@@ -921,7 +922,7 @@ lines(p.U, col=&quot;red&quot;, lty=3)</textarea></div><div class="cstatus" aria
 <header class="shead"><div class="sunit">U6 AR 모형화</div><h2>QQQ에 AR 적합</h2></header>
 <div class="sbody two"><div class="lcol">
 <p>대조 자료 QQQ에도 <code>ar()</code>을 적용한다. AR(1)의 특성방정식 1 − φx = 0의 해는 x = 1/φ라 ∣φ∣ &lt; 1이어야 정상이고, φ = 1이면 확률보행(RW)과 같아 비정상이다. U4에서 QQQ는 ADF를 기각하지 못한 확률적 추세였다.</p>
-<div class="cell" id="cell-u6_qqq" data-cell="u6_qqq"><div class="chead"><span class="ctitle">QQQ의 차수와 계수</span><span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="2" aria-label="R 코드: QQQ의 차수와 계수">ar(QQQ)$order
+<div class="cell" id="cell-u6_qqq" data-cell="u6_qqq"><div class="chead"><span class="ctitle">QQQ의 차수와 계수</span><span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="2" aria-label="R 코드: QQQ의 차수와 계수">ar(QQQ)$order
 ar(QQQ)$ar</textarea></div><div class="cstatus" aria-live="polite"></div></div>
 </div><div class="rcol"><div class="outpane">
 <div class="oslot" data-out="u6_qqq"><div class="olabel">QQQ의 차수와 계수</div><div class="ohint">결과</div><div class="out"></div></div>
@@ -932,9 +933,9 @@ ar(QQQ)$ar</textarea></div><div class="cstatus" aria-live="polite"></div></div>
 <section class="slide wrap one" id="s-U6-11" data-unit="U6" data-key="U6-11" data-title="정리 · AR 모형화" data-ref="강의 4장 p.2, p.46" hidden>
 <header class="shead"><div class="sunit">U6 AR 모형화</div><h2><span class="pre">정리 · </span>AR 모형화</h2></header>
 <div class="sbody one">
-<p>모형화 3단계와 예측의 원리, 모의 AR(2)·주간 평균·QQQ에서 확인한 것.</p>
-<ul><li>식별: AR(p)의 PACF는 시차 p 이후로 절단되고 ACF는 지수적으로 감소한다. 모의 AR(2)는 PACF의 시차 1·2(0.78, −0.25)가 점선 밖이고 그 뒤는 우연히 살짝 넘는 시차 10 말고는 점선 안이며, ACF가 지수적으로 줄어 AR(2)가 잠정모형이다.</li><li>추정: <code>ar()</code>는 AIC가 가장 작은 차수를 고르고 Yule-Walker로 계수를 추정한다. 모의 AR(2)는 차수 2, φ̂<sub>1</sub> = 0.9769, φ̂<sub>2</sub> = −0.2537로 자료를 만든 1과 −0.25에 가깝고, 주간 평균은 차수 4, φ̂ = 0.833, −0.322, 0.001, 0.295다.</li><li>유의성 검정: 검정통계량 φ̂<sub>i</sub> / se(φ̂<sub>i</sub>)의 절대값이 대략 1.96보다 크면 φ<sub>i</sub> ≠ 0이다. 모의 AR(2)는 22.51과 −5.85로 두 계수 모두 필요하다.</li><li>잔차 진단: 잔차의 ACF·PACF가 모두 점선 안이면 모형이 적절하다. 모의 AR(2)도 주간 평균의 AR(4)도 잔차의 ACF·PACF가 모두 점선 안이다.</li><li>예측: 예측값은 처음 몇 시점은 마지막 값들의 영향으로 움직이다가 평균 μ̂로 수렴하고, 예측구간의 폭은 넓어지다가 일정해진다. 모의 AR(2)는 n.ahead = 50이면 μ̂ = 0.097로 가라앉고 표준오차는 1.01에서 1.67까지 커진다.</li><li>자료가 적으면 점선(±1.96/√n)이 넓어 PACF만으로 차수를 정하기 어렵다. 주간 평균(52개, 점선 ±0.27)은 시차 1(0.70)·4(0.30)·10(0.32)·16(−0.31)이 점선 밖이라 분명하지 않다.</li><li>주간 평균의 10주 예측값은 평균(약 382만) 쪽으로 움직이고, 아래쪽 경계는 54·55·59·60주째에 0보다 작아진다. 거래 횟수는 0보다 작을 수 없으므로 예측구간의 아래쪽은 뜻이 없다.</li><li>φ = 1이면 확률보행이라, φ̂가 1에 가까우면 정상성은 단위근 검정과 함께 판단한다. QQQ는 차수 1, φ̂ = 0.9798(시차 1의 표본자기상관)로 경계에 있고 U4의 ADF도 기각하지 못해 차분이 필요한 ARIMA 모형으로 간다.</li></ul>
-<p>주간 평균은 추세가 있어 AR을 근사적으로 적합한 것이다. 다음 단원은 주 자료의 추세와 계절성을 회귀모형으로 설명한다.</p>
+<p>모형화 3단계와 예측의 원리.</p>
+<ul><li>식별: AR(p)의 PACF는 시차 p 이후로 절단되고 ACF는 지수적으로 감소한다. 시차 h의 PACF는 그 사이 값들의 영향을 제거한 뒤의 상관이다.</li><li>추정: <code>ar()</code>는 AIC(적합도에 모수 개수의 벌점을 더한 값)가 가장 작은 차수를 고르고, Yule-Walker 방정식에 표본 ACF를 넣어 계수를 추정한다. AR(1)의 Yule-Walker 추정량은 φ̂ = ρ̂<sub>1</sub>이다.</li><li>유의성 검정: 검정통계량 φ̂<sub>i</sub> / se(φ̂<sub>i</sub>)의 절대값이 대략 1.96보다 크면 φ<sub>i</sub> ≠ 0이다. 표준오차는 점근 분산행렬 <code>asy.var</code>의 대각원소 제곱근이다.</li><li>잔차 진단: 잠정모형이 적절하면 잔차는 백색잡음과 비슷해야 한다. 잔차의 ACF·PACF가 모두 점선 안이면 남은 자기상관이 없고, 아니면 잔차가 백색잡음이 될 때까지 다시 모형화한다. 차수가 p이면 앞의 잔차 p개는 NA다.</li><li>예측: X̂<sub>t+n</sub> = E(X<sub>t+n</sub> ∣ X<sub>1</sub>, ⋯, X<sub>t</sub>)는 처음 몇 시점은 마지막 값들의 영향으로 움직이다가 평균 μ̂로 수렴하고, 예측구간(예측값 ± 2 × 표준오차)의 폭은 넓어지다가 일정해진다. 단기 예측에 쓴다.</li><li>자료가 적으면 점선이 넓어 PACF만으로 차수를 정하기 어렵고, 비정상 자료에 AR을 적합하면 근사일 뿐이다. φ̂가 1에 가까우면 정상성은 단위근 검정과 함께 판단한다.</li></ul>
+<p>결정적 추세가 있는 자료는 회귀모형으로 간다. 다음 단원은 추세와 계절성을 회귀로 설명한다.</p>
 </div>
 </section>
 <section class="slide opener one" id="s-U7-1" data-unit="U7" data-key="U7-1" data-title="추세·계절 회귀" data-ref="강의 5장 p.2–6, p.13, p.19" hidden>
@@ -949,7 +950,7 @@ ar(QQQ)$ar</textarea></div><div class="cstatus" aria-live="polite"></div></div>
 <header class="shead"><div class="sunit">U7 추세·계절 회귀</div><h2>추세 항</h2></header>
 <div class="sbody two"><div class="lcol">
 <p>추세는 시간 t의 다항함수 f(t) = β<sub>0</sub> + β<sub>1</sub>t + ⋯ + β<sub>p</sub>t<sup>p</sup>로 넣고, 가장 단순한 것이 직선 β<sub>0</sub> + β<sub>1</sub>t다. 추세의 방향이 바뀐 시점이 있으면, 추세가 안정적으로 유지되는 구간의 자료만 쓴다. 주 자료는 6주째 고점 뒤인 7주째(2024년 11월 18일)부터의 <code>trd.wd</code>(322개 = 46주)를 쓰며, 시간 단위는 주다.</p>
-<div class="cell" id="cell-u7_trend" data-cell="u7_trend"><div class="chead"><span class="ctitle">직선 추세</span><span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="5" aria-label="R 코드: 직선 추세">trd.wd &lt;- window(TRD, st=7)              # 7주째부터: 추세가 한 방향인 구간
+<div class="cell" id="cell-u7_trend" data-cell="u7_trend"><div class="chead"><span class="ctitle">직선 추세</span><span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="5" aria-label="R 코드: 직선 추세">trd.wd &lt;- window(TRD, st=7)              # 7주째부터: 추세가 한 방향인 구간
 plot(trd.wd)
 trd.lm &lt;- lm(trd.wd ~ time(trd.wd))      # 직선으로 적합
 abline(trd.lm, col=&quot;red&quot;)
@@ -965,7 +966,7 @@ summary(trd.lm)</textarea></div><div class="cstatus" aria-live="polite"></div></
 <header class="shead"><div class="sunit">U7 추세·계절 회귀</div><h2>계절 항 만들기</h2></header>
 <div class="sbody two"><div class="lcol">
 <p>주기성은 sin·cos 항(조화항) Σ<sub>i</sub>(a<sub>i</sub> sin2πit + b<sub>i</sub> cos2πit)로 넣는다. i = 1, 2, 3, ⋯은 주기 1, 1/2, 1/3, ⋯의 파동이다. 주 자료는 주기 1이 1주(7일)이고 하루 간격(1/7)이라 i = 4, 5, 6이 i = 3, 2, 1과 겹치므로 i = 1, 2, 3만 쓴다.</p>
-<div class="cell" id="cell-u7_sprep" data-cell="u7_sprep"><div class="chead"><span class="ctitle">time_st와 SIN·COS 만들기</span><span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="cneeds">앞 셀: <a data-goto-cell="u7_trend">직선 추세</a></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="8" aria-label="R 코드: time_st와 SIN·COS 만들기">time &lt;- time(trd.wd)
+<div class="cell" id="cell-u7_sprep" data-cell="u7_sprep"><div class="chead"><span class="ctitle">time_st와 SIN·COS 만들기</span><span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="cneeds">앞 셀: <a data-goto-cell="u7_trend">직선 추세</a></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="8" aria-label="R 코드: time_st와 SIN·COS 만들기">time &lt;- time(trd.wd)
 time_st &lt;- (time-mean(time))/sd(time)   # 추세항: 표준화 (t² 값이 커지지 않게)
 SIN &lt;- matrix(nr=length(time), nc=3)    # 계절항: 원단위 time
 COS &lt;- matrix(nr=length(time), nc=3)
@@ -978,7 +979,7 @@ for (i in 1:3){                         # 하루 간격 자료라 3까지 (월�
 </div>
 <p class="note"><code>(time-mean(time))/sd(time)</code>은 추세항의 표준화 t<sub>st</sub>다. <code>sin(2*pi*i*time)</code>의 i = 1, 2, 3은 주기 1, 1/2, 1/3의 sin이고, 주 자료는 주기 1이 1주라 7일, 3.5일, 약 2.3일 주기다.</p>
 <p class="note"><code>matrix(nr=length(time), nc=3)</code>은 322행 3열의 빈 행렬이고, for 문이 열마다 i = 1, 2, 3의 값을 채운다. 출력 없이 <code>time_st</code>·<code>SIN</code>·<code>COS</code>만 만든다.</p>
-<details class="more"><summary>i = 4가 i = 3과 겹치는지 확인하면</summary><div class="morebody"><p>하루 간격 time에서 sin2π4t = −sin2π3t, cos2π4t = cos2π3t다. 같은 열이 둘 들어가면 <code>lm</code>의 계수가 NA로 나온다.</p><div class="cell" id="cell-u7_sin4" data-cell="u7_sin4"><div class="chead"><span class="ctitle">i = 3과 i = 4의 sin·cos</span><span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="cneeds">앞 셀: <a data-goto-cell="u7_sprep">time_st와 SIN·COS 만들기</a></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="3" aria-label="R 코드: i = 3과 i = 4의 sin·cos">s3 &lt;- sin(2*pi*3*time); s4 &lt;- sin(2*pi*4*time)
+<details class="more"><summary>i = 4가 i = 3과 겹치는지 확인하면</summary><div class="morebody"><p>하루 간격 time에서 sin2π4t = −sin2π3t, cos2π4t = cos2π3t다. 같은 열이 둘 들어가면 <code>lm</code>의 계수가 NA로 나온다.</p><div class="cell" id="cell-u7_sin4" data-cell="u7_sin4"><div class="chead"><span class="ctitle">i = 3과 i = 4의 sin·cos</span><span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="cneeds">앞 셀: <a data-goto-cell="u7_sprep">time_st와 SIN·COS 만들기</a></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="3" aria-label="R 코드: i = 3과 i = 4의 sin·cos">s3 &lt;- sin(2*pi*3*time); s4 &lt;- sin(2*pi*4*time)
 c3 &lt;- cos(2*pi*3*time); c4 &lt;- cos(2*pi*4*time)
 round(head(cbind(s3, s4, c3, c4)), 3)   # s4 = -s3, c4 = c3</textarea></div><div class="cstatus" aria-live="polite"></div><div class="out"></div></div><p class="note">출력의 s4 열은 s3 열과 부호만 반대이고, c4 열은 c3 열과 같다.</p><p class="note">i + i′ = 7이면 2πit + 2πi′t = 2π·7t이고, t가 1/7의 배수라 이것은 2π의 배수다. 그래서 i = 5는 i = 2와, i = 6은 i = 1과 겹친다.</p></div></details>
 </div></div>
@@ -987,7 +988,7 @@ round(head(cbind(s3, s4, c3, c4)), 3)   # s4 = -s3, c4 = c3</textarea></div><div
 <header class="shead"><div class="sunit">U7 추세·계절 회귀</div><h2>추세 항과 계절 항을 함께 적합하기</h2></header>
 <div class="sbody two"><div class="lcol">
 <p>추세 항과 계절 항을 한 회귀식에 넣는다: X<sub>t</sub> = β<sub>0</sub> + β<sub>1</sub>t<sub>st</sub> + β<sub>2</sub>t<sub>st</sub>² + Σ<sub>i=1</sub><sup>3</sup>(a<sub>i</sub> sin2πit + b<sub>i</sub> cos2πit) + ε<sub>t</sub>. 추세가 직선에서 조금 휘어 있을 수 있어 2차 항까지 넣고, 필요 없는 항은 <code>summary</code>로 가려낸다. p-value가 0.05보다 작은 항을 남긴 것이 잠정모형이다.</p>
-<div class="cell" id="cell-u7_fit" data-cell="u7_fit"><div class="chead"><span class="ctitle">추세 + 계절 항 전체 적합</span><span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="cneeds">앞 셀: <a data-goto-cell="u7_trend">직선 추세</a> · <a data-goto-cell="u7_sprep">time_st와 SIN·COS 만들기</a></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="4" aria-label="R 코드: 추세 + 계절 항 전체 적합">fit &lt;- lm(trd.wd ~ time_st + I(time_st^2)
+<div class="cell" id="cell-u7_fit" data-cell="u7_fit"><div class="chead"><span class="ctitle">추세 + 계절 항 전체 적합</span><span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="cneeds">앞 셀: <a data-goto-cell="u7_trend">직선 추세</a> · <a data-goto-cell="u7_sprep">time_st와 SIN·COS 만들기</a></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="4" aria-label="R 코드: 추세 + 계절 항 전체 적합">fit &lt;- lm(trd.wd ~ time_st + I(time_st^2)
           +SIN[,1]+SIN[,2]+SIN[,3]
           +COS[,1]+COS[,2]+COS[,3])     # 추세 2항 + 계절 6항
 summary(fit)</textarea></div><div class="cstatus" aria-live="polite"></div></div>
@@ -1002,7 +1003,7 @@ summary(fit)</textarea></div><div class="cstatus" aria-live="polite"></div></div
 <header class="shead"><div class="sunit">U7 추세·계절 회귀</div><h2>log 변환</h2></header>
 <div class="sbody two"><div class="lcol">
 <p>이분산성이 있으면 Box-Cox 변환 (x<sup>λ</sup> − 1)/λ (λ ≠ 0), ln x (λ = 0)으로 분산을 안정화한 뒤 회귀모형을 적합한다. λ는 변환모수이고, log 변환은 λ = 0인 경우다. 값이 모두 양수여야 한다. U1에서 주 자료는 수준이 높을 때 변동폭이 큰 이분산성을 보였다.</p>
-<div class="cell" id="cell-u7_log" data-cell="u7_log"><div class="chead"><span class="ctitle">log 변환 전후 그림</span><span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="cneeds">앞 셀: <a data-goto-cell="u7_trend">직선 추세</a></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="4" aria-label="R 코드: log 변환 전후 그림">trd.log &lt;- log(trd.wd)       # λ = 0: ln x
+<div class="cell" id="cell-u7_log" data-cell="u7_log"><div class="chead"><span class="ctitle">log 변환 전후 그림</span><span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="cneeds">앞 셀: <a data-goto-cell="u7_trend">직선 추세</a></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="4" aria-label="R 코드: log 변환 전후 그림">trd.log &lt;- log(trd.wd)       # λ = 0: ln x
 par(mfrow=c(1,2))
 plot(trd.wd)
 plot(trd.log)</textarea></div><div class="cstatus" aria-live="polite"></div></div>
@@ -1010,7 +1011,7 @@ plot(trd.log)</textarea></div><div class="cstatus" aria-live="polite"></div></di
 <div class="oslot" data-out="u7_log"><div class="olabel">log 변환 전후 그림</div><div class="ohint">결과</div><div class="out"></div></div>
 </div>
 <p class="note"><code>par(mfrow=c(1,2))</code>는 그림 두 개를 나란히 놓는다. 왼쪽이 변환 전, 오른쪽이 변환 뒤다.</p>
-<details class="more"><summary>λ ≠ 0인 Box-Cox 변환을 해 보면</summary><div class="morebody"><p>λ = 0.5면 (x<sup>0.5</sup> − 1)/0.5다. 변환 전, λ = 0.5, λ = 0(ln x)의 세 그림이 나란히 나온다.</p><div class="cell" id="cell-u7_bc" data-cell="u7_bc"><div class="chead"><span class="ctitle">Box-Cox 변환</span><span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="cneeds">앞 셀: <a data-goto-cell="u7_trend">직선 추세</a> · <a data-goto-cell="u7_log">log 변환 전후 그림</a></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="6" aria-label="R 코드: Box-Cox 변환">lambda &lt;- 0.5                          # 바꿔 보기: λ (0.5 → 0.25)
+<details class="more"><summary>λ ≠ 0인 Box-Cox 변환을 해 보면</summary><div class="morebody"><p>λ = 0.5면 (x<sup>0.5</sup> − 1)/0.5다. 변환 전, λ = 0.5, λ = 0(ln x)의 세 그림이 나란히 나온다.</p><div class="cell" id="cell-u7_bc" data-cell="u7_bc"><div class="chead"><span class="ctitle">Box-Cox 변환</span><span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="cneeds">앞 셀: <a data-goto-cell="u7_trend">직선 추세</a> · <a data-goto-cell="u7_log">log 변환 전후 그림</a></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="6" aria-label="R 코드: Box-Cox 변환">lambda &lt;- 0.5                          # 바꿔 보기: λ (0.5 → 0.25)
 trd.bc &lt;- (trd.wd^lambda - 1)/lambda   # (x^λ − 1)/λ, λ ≠ 0
 par(mfrow=c(1,3))
 plot(trd.wd)                           # 변환 전
@@ -1022,7 +1023,7 @@ plot(trd.log)                          # λ = 0: ln x</textarea></div><div class
 <header class="shead"><div class="sunit">U7 추세·계절 회귀</div><h2>log 모형 적합</h2></header>
 <div class="sbody two"><div class="lcol">
 <p>회귀식의 <code>trd.wd</code>를 <code>log(trd.wd)</code>로 바꾼다. 항을 고르는 방법은 같다. p-value가 0.05보다 작은 항을 남긴 것이 주 자료의 잠정모형이다.</p>
-<div class="cell" id="cell-u7_logfit" data-cell="u7_logfit"><div class="chead"><span class="ctitle">log 모형 적합</span><span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="cneeds">앞 셀: <a data-goto-cell="u7_trend">직선 추세</a> · <a data-goto-cell="u7_sprep">time_st와 SIN·COS 만들기</a></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="4" aria-label="R 코드: log 모형 적합">fit &lt;- lm(log(trd.wd) ~ time_st + I(time_st^2)
+<div class="cell" id="cell-u7_logfit" data-cell="u7_logfit"><div class="chead"><span class="ctitle">log 모형 적합</span><span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="cneeds">앞 셀: <a data-goto-cell="u7_trend">직선 추세</a> · <a data-goto-cell="u7_sprep">time_st와 SIN·COS 만들기</a></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="4" aria-label="R 코드: log 모형 적합">fit &lt;- lm(log(trd.wd) ~ time_st + I(time_st^2)
           +SIN[,1]+SIN[,2]+SIN[,3]
           +COS[,1]+COS[,2]+COS[,3])     # 반응변수만 log(trd.wd)로
 summary(fit)</textarea></div><div class="cstatus" aria-live="polite"></div></div>
@@ -1036,7 +1037,7 @@ summary(fit)</textarea></div><div class="cstatus" aria-live="polite"></div></div
 <header class="shead"><div class="sunit">U7 추세·계절 회귀</div><h2>QQQ에 log 변환</h2></header>
 <div class="sbody two"><div class="lcol">
 <p>대조 자료 QQQ에 같은 변환을 한다. U4에서 QQQ는 ADF가 단위근을 기각하지 못해 확률적 추세로 판정했다. Box-Cox 변환은 이분산성이 있을 때 분산을 안정화하는 변환이지, 확률적 추세를 없애는 변환이 아니다.</p>
-<div class="cell" id="cell-u7_qqq" data-cell="u7_qqq"><div class="chead"><span class="ctitle">QQQ에 log 변환</span><span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="5" aria-label="R 코드: QQQ에 log 변환">library(tseries)
+<div class="cell" id="cell-u7_qqq" data-cell="u7_qqq"><div class="chead"><span class="ctitle">QQQ에 log 변환</span><span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="5" aria-label="R 코드: QQQ에 log 변환">library(tseries)
 qqq.log &lt;- log(QQQ)
 par(mfrow=c(1,2))
 plot(QQQ); plot(qqq.log)
@@ -1050,9 +1051,9 @@ adf.test(qqq.log)            # H0: 단위근 존재</textarea></div><div class="
 <section class="slide wrap one" id="s-U7-8" data-unit="U7" data-key="U7-8" data-title="정리 · 추세·계절 회귀" data-ref="강의 5장 p.2, p.22" hidden>
 <header class="shead"><div class="sunit">U7 추세·계절 회귀</div><h2><span class="pre">정리 · </span>추세·계절 회귀</h2></header>
 <div class="sbody one">
-<p>추세·계절 회귀의 원리와 두 자료에서 확인한 것.</p>
-<ul><li>추세나 계절성이 결정적이면 X<sub>t</sub> = f(t) + ε<sub>t</sub>를 적합해 ε<sub>t</sub> = X<sub>t</sub> − f(t)를 정상시계열로 만든다.</li><li>추세 항은 추세가 한 방향으로 유지되는 구간에만 맞춘다. 주 자료는 7주째부터 자른 <code>trd.wd</code>(322개 = 46주)에 직선을 맞추면 기울기가 약 −88,930(1주당), p-value가 2e-16보다 작아 유의한 감소 추세다.</li><li>주기성은 sin·cos 항 Σ<sub>i</sub>(a<sub>i</sub> sin2πit + b<sub>i</sub> cos2πit)로 넣는다. 주 자료는 하루 간격(1/7)이라 i = 4, 5, 6이 i = 3, 2, 1과 겹쳐 i = 1, 2, 3(7일, 3.5일, 약 2.3일 주기)만 쓴다.</li><li>추세 항과 계절 항을 한 회귀식에 넣고 <code>summary</code>의 p-value가 0.05보다 작은 항을 남긴 것이 잠정모형이다. 주 자료는 log 변환 전에 <code>time_st</code>, <code>I(time_st^2)</code>, <code>SIN[,1]</code>, <code>SIN[,3]</code>, <code>COS[,2]</code> 다섯 항이 남는다.</li><li>이분산성이 있으면 Box-Cox 변환(λ = 0이면 ln x)으로 분산을 안정화한 뒤 적합한다. 주 자료는 log를 취하면 수준이 높았던 앞부분의 큰 변동폭과 요일 주기의 폭이 줄어 전 구간이 고르게 되고, λ = 0.5보다 ln x 쪽이 더 고르다.</li><li>변환 뒤에는 항을 다시 고른다. 주 자료는 log 변환 뒤 <code>SIN[,2]</code>가 새로 들어와, 잠정모형은 log(X<sub>t</sub>) = β<sub>0</sub> + β<sub>1</sub>t<sub>st</sub> + β<sub>2</sub>t<sub>st</sub>² + a<sub>1</sub>sin2πt + a<sub>2</sub>sin2π2t + a<sub>3</sub>sin2π3t + b<sub>2</sub>cos2π2t + ε<sub>t</sub>다.</li><li>Box-Cox 변환은 분산을 안정화할 뿐 확률적 추세를 없애지 않으므로, 확률적 추세는 회귀가 아니라 ARIMA 모형으로 다룬다. QQQ는 log 변환으로 변동폭은 고르게 되지만, ADF는 여전히 단위근을 기각하지 못한다 (p ≈ 0.28).</li></ul>
-<p>잠정모형의 잔차 ε<sub>t</sub>는 정상시계열이지만 서로 독립이 아닐 수 있으므로, 다음 단원은 잔차의 자기상관을 보정하고 예측값을 역변환하는 U8이다.</p>
+<p>추세·계절 회귀의 원리.</p>
+<ul><li>추세나 계절성이 결정적이면 X<sub>t</sub> = f(t) + ε<sub>t</sub>를 적합해 ε<sub>t</sub> = X<sub>t</sub> − f(t)를 정상시계열로 만든다. 이 ε<sub>t</sub>가 잔차다.</li><li>추세 항은 시간의 다항함수 β<sub>0</sub> + β<sub>1</sub>t + β<sub>2</sub>t² + ⋯이고, 추세가 한 방향으로 유지되는 구간에만 맞춘다. 추세항의 time은 표준화해 수치를 안정시킨다.</li><li>주기성은 sin·cos 항 Σ<sub>i</sub>(a<sub>i</sub> sin2πit + b<sub>i</sub> cos2πit)로 넣는다. i는 주기 1, 1/2, 1/3, ⋯의 파동이고, 한 주기에 p개를 관측하면 i는 p/2까지만 뜻이 있다(그 뒤는 앞의 항과 겹친다). 계절항은 원단위 time을 쓴다.</li><li>항은 <code>summary</code>의 p-value로 고른다. 0.05보다 작은 항을 남긴 것이 잠정모형이다.</li><li>이분산성이 있으면 Box-Cox 변환 (x<sup>λ</sup> − 1)/λ, λ = 0이면 ln x로 분산을 안정화한 뒤 적합한다. 값이 모두 양수여야 하고, 변환 뒤에는 항을 다시 고른다.</li><li>Box-Cox 변환은 분산을 안정화할 뿐 확률적 추세를 없애지 않는다. 확률적 추세는 회귀가 아니라 ARIMA 모형으로 다룬다.</li></ul>
+<p>잠정모형의 잔차는 정상시계열이지만 서로 독립이 아닐 수 있으므로, 다음 단원은 잔차의 자기상관을 보정하고 예측값을 역변환하는 U8이다.</p>
 </div>
 </section>
 <section class="slide opener one" id="s-U8-1" data-unit="U8" data-key="U8-1" data-title="보정과 예측" data-ref="강의 5장 p.7–12, p.23–29" hidden>
@@ -1067,7 +1068,7 @@ adf.test(qqq.log)            # H0: 단위근 존재</textarea></div><div class="
 <header class="shead"><div class="sunit">U8 보정과 예측</div><h2>직선 추세의 잔차</h2></header>
 <div class="sbody two"><div class="lcol">
 <p>잠정모형의 잔차 ε<sub>t</sub>는 서로 독립이 아닐 수 있어, ACF·PACF로 AR 차수를 정해 적합한다. 직선 추세의 잠정모형은 X<sub>t</sub> = β<sub>0</sub> + β<sub>1</sub>t + ε<sub>t</sub>이고, 잔차가 AR(p)이면 ε<sub>t</sub> = φ<sub>1</sub>ε<sub>t−1</sub> + ⋯ + φ<sub>p</sub>ε<sub>t−p</sub> + η<sub>t</sub>, η<sub>t</sub> ~ WN이다. 계절 항이 없는 모형의 잔차에 요일 주기가 남으면 ACF의 시차 7, 14, 21에 봉우리가 선다.</p>
-<div class="cell" id="cell-u8_resid" data-cell="u8_resid"><div class="chead"><span class="ctitle">잔차 그림·ACF·PACF</span><span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="cneeds">앞 셀: <a data-goto-cell="u7_trend">직선 추세</a> <span class="nu">[U7]</span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="6" aria-label="R 코드: 잔차 그림·ACF·PACF">trd.lm &lt;- lm(trd.wd ~ time(trd.wd))   # U7의 직선 모형
+<div class="cell" id="cell-u8_resid" data-cell="u8_resid"><div class="chead"><span class="ctitle">잔차 그림·ACF·PACF</span><span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="cneeds">앞 셀: <a data-goto-cell="u7_trend">직선 추세</a> <span class="nu">[U7]</span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="6" aria-label="R 코드: 잔차 그림·ACF·PACF">trd.lm &lt;- lm(trd.wd ~ time(trd.wd))   # U7의 직선 모형
 r &lt;- trd.lm$res                       # 잔차
 layout(1:3)
 plot(r, type=&quot;l&quot;)
@@ -1083,7 +1084,7 @@ pacf(r, main=&quot;&quot;)</textarea></div><div class="cstatus" aria-live="polit
 <header class="shead"><div class="sunit">U8 보정과 예측</div><h2>잔차에 AR(2) 적합</h2></header>
 <div class="sbody two"><div class="lcol">
 <p>차수는 잔차의 PACF가 절단되는 시차로 정한다. 한 차수 높은 AR(2)를 적합해 ar2가 유의하지 않으면 AR(1)로 충분하다. AR을 적합한 뒤의 잔차 r1이 WN이면 잔차의 자기상관이 그 AR로 설명된 것이고, WN이 아니면 차수나 잠정모형을 다시 본다.</p>
-<div class="cell" id="cell-u8_resar" data-cell="u8_resar"><div class="chead"><span class="ctitle">잔차에 AR(2) 적합</span><span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="cneeds">앞 셀: <a data-goto-cell="u8_resid">잔차 그림·ACF·PACF</a></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="7" aria-label="R 코드: 잔차에 AR(2) 적합">r.ar &lt;- arima(r, order=c(2,0,0))     # 바꿔 보기: AR 차수 (2 → 1)
+<div class="cell" id="cell-u8_resar" data-cell="u8_resar"><div class="chead"><span class="ctitle">잔차에 AR(2) 적합</span><span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="cneeds">앞 셀: <a data-goto-cell="u8_resid">잔차 그림·ACF·PACF</a></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="7" aria-label="R 코드: 잔차에 AR(2) 적합">r.ar &lt;- arima(r, order=c(2,0,0))     # 바꿔 보기: AR 차수 (2 → 1)
 r.ar
 r1 &lt;- r.ar$res                       # AR(2)를 적합한 뒤의 잔차
 layout(1:3)
@@ -1101,7 +1102,7 @@ pacf(r1, main=&quot;&quot;)</textarea></div><div class="cstatus" aria-live="poli
 <header class="shead"><div class="sunit">U8 보정과 예측</div><h2>잠정모형의 잔차</h2></header>
 <div class="sbody two"><div class="lcol">
 <p>U7에서 고른 잠정모형은 log(X<sub>t</sub>) = β<sub>0</sub> + β<sub>1</sub>t<sub>st</sub> + β<sub>2</sub>t<sub>st</sub>² + a<sub>1</sub>sin2πt + a<sub>2</sub>sin2π2t + a<sub>3</sub>sin2π3t + b<sub>2</sub>cos2π2t + ε<sub>t</sub>다. 잔차를 그림·ACF·PACF로 진단한다. PACF가 시차 p 이후 절단되면 AR(p)로 적합한다.</p>
-<div class="cell" id="cell-u8_logres" data-cell="u8_logres"><div class="chead"><span class="ctitle">잠정모형과 잔차</span><span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="cneeds">앞 셀: <a data-goto-cell="u7_trend">직선 추세</a> <span class="nu">[U7]</span> · <a data-goto-cell="u7_sprep">time_st와 SIN·COS 만들기</a> <span class="nu">[U7]</span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="7" aria-label="R 코드: 잠정모형과 잔차">trd.lm &lt;- lm(log(trd.wd) ~ time_st + I(time_st^2)
+<div class="cell" id="cell-u8_logres" data-cell="u8_logres"><div class="chead"><span class="ctitle">잠정모형과 잔차</span><span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="cneeds">앞 셀: <a data-goto-cell="u7_trend">직선 추세</a> <span class="nu">[U7]</span> · <a data-goto-cell="u7_sprep">time_st와 SIN·COS 만들기</a> <span class="nu">[U7]</span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="7" aria-label="R 코드: 잠정모형과 잔차">trd.lm &lt;- lm(log(trd.wd) ~ time_st + I(time_st^2)
              + SIN[,1] + SIN[,2] + SIN[,3] + COS[,2])   # U7에서 고른 항
 r &lt;- trd.lm$res
 layout(1:3)
@@ -1118,7 +1119,7 @@ pacf(r, main=&quot;&quot;)</textarea></div><div class="cstatus" aria-live="polit
 <header class="shead"><div class="sunit">U8 보정과 예측</div><h2>잔차에 AR(1) 적합</h2></header>
 <div class="sbody two"><div class="lcol">
 <p>잔차에 AR(1)을 적합하고 그 잔차 r1의 ACF·PACF가 점선 안이면 WN으로 본다. 점선 ±1.96/√n은 ρ̂<sub>h</sub>가 약 95%의 확률로 들어오는 범위라서, WN이라도 20개에 하나쯤은 점선을 넘을 수 있다.</p>
-<div class="cell" id="cell-u8_logar" data-cell="u8_logar"><div class="chead"><span class="ctitle">잔차에 AR(1) 적합</span><span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="cneeds">앞 셀: <a data-goto-cell="u8_logres">잠정모형과 잔차</a></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="7" aria-label="R 코드: 잔차에 AR(1) 적합">r.ar &lt;- arima(r, order=c(1,0,0))     # 바꿔 보기: AR 차수 (1 → 2)
+<div class="cell" id="cell-u8_logar" data-cell="u8_logar"><div class="chead"><span class="ctitle">잔차에 AR(1) 적합</span><span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="cneeds">앞 셀: <a data-goto-cell="u8_logres">잠정모형과 잔차</a></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="7" aria-label="R 코드: 잔차에 AR(1) 적합">r.ar &lt;- arima(r, order=c(1,0,0))     # 바꿔 보기: AR 차수 (1 → 2)
 r.ar
 r1 &lt;- r.ar$res
 layout(1:3)
@@ -1135,7 +1136,7 @@ pacf(r1, main=&quot;&quot;)</textarea></div><div class="cstatus" aria-live="poli
 <header class="shead"><div class="sunit">U8 보정과 예측</div><h2>GLS 최종모형</h2></header>
 <div class="sbody two"><div class="lcol">
 <p>ε<sub>t</sub> ~ i.i.d.(0, σ²)이면 잔차제곱합을 최소로 하는 OLS가 BLUE(최량선형불편추정량)지만, 오차항이 독립이 아니거나 분산이 같지 않으면 GLS가 더 효율적이다. GLS는 오차항의 가정이 만족되도록 자료를 선형변환한 뒤 OLS를 쓰므로 오차항에 대한 정보가 필요하다. 최종모형은 log(X<sub>t</sub>) = f(t) + ε<sub>t</sub>, ε<sub>t</sub> = φε<sub>t−1</sub> + η<sub>t</sub>, η<sub>t</sub> ~ WN이다.</p>
-<div class="cell" id="cell-u8_gls" data-cell="u8_gls"><div class="chead"><span class="ctitle">GLS 최종모형</span><span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="cneeds">앞 셀: <a data-goto-cell="u7_trend">직선 추세</a> <span class="nu">[U7]</span> · <a data-goto-cell="u7_sprep">time_st와 SIN·COS 만들기</a> <span class="nu">[U7]</span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="5" aria-label="R 코드: GLS 최종모형">library(nlme)
+<div class="cell" id="cell-u8_gls" data-cell="u8_gls"><div class="chead"><span class="ctitle">GLS 최종모형</span><span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="cneeds">앞 셀: <a data-goto-cell="u7_trend">직선 추세</a> <span class="nu">[U7]</span> · <a data-goto-cell="u7_sprep">time_st와 SIN·COS 만들기</a> <span class="nu">[U7]</span></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="5" aria-label="R 코드: GLS 최종모형">library(nlme)
 trd.gls &lt;- gls(log(trd.wd) ~ time_st + I(time_st^2)
                + SIN[,1] + SIN[,2] + SIN[,3] + COS[,2],
                cor=corARMA(0.65, p=1))   # 0.65 = r.ar의 ar1 추정값
@@ -1151,7 +1152,7 @@ summary(trd.gls)</textarea></div><div class="cstatus" aria-live="polite"></div><
 <header class="shead"><div class="sunit">U8 보정과 예측</div><h2>예측</h2></header>
 <div class="sbody two"><div class="lcol">
 <p>예측은 두 가지다. 시계열모형 기반의 예측은 <code>predict(fit, n.ahead=14)</code>처럼 몇 시점 앞인지만 준다. 회귀모형 기반의 예측은 <code>predict(fit, new.X)</code>로, 예측하려는 시점의 설명변수 값을 회귀식과 같은 이름으로 <code>new.X</code>에 data.frame으로 준다.</p>
-<div class="cell" id="cell-u8_pred" data-cell="u8_pred"><div class="chead"><span class="ctitle">회귀모형 기반 예측</span><span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="cneeds">앞 셀: <a data-goto-cell="u7_trend">직선 추세</a> <span class="nu">[U7]</span> · <a data-goto-cell="u7_sprep">time_st와 SIN·COS 만들기</a> <span class="nu">[U7]</span> · <a data-goto-cell="u8_gls">GLS 최종모형</a></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="13" aria-label="R 코드: 회귀모형 기반 예측">library(nlme)
+<div class="cell" id="cell-u8_pred" data-cell="u8_pred"><div class="chead"><span class="ctitle">회귀모형 기반 예측</span><span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="cneeds">앞 셀: <a data-goto-cell="u7_trend">직선 추세</a> <span class="nu">[U7]</span> · <a data-goto-cell="u7_sprep">time_st와 SIN·COS 만들기</a> <span class="nu">[U7]</span> · <a data-goto-cell="u8_gls">GLS 최종모형</a></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="13" aria-label="R 코드: 회귀모형 기반 예측">library(nlme)
 new.t &lt;- seq(53, 54+6/7, 1/7)            # 다음 2주 = 14일
 time_st &lt;- (new.t-mean(time))/sd(time)   # 학습 자료 time의 평균·표준편차로 표준화
 SIN &lt;- matrix(nr=length(new.t), nc=3)
@@ -1176,7 +1177,7 @@ ts.plot(log(trd.wd), pred, col=c(&quot;black&quot;,&quot;red&quot;), lty=1:2)</t
 <header class="shead"><div class="sunit">U8 보정과 예측</div><h2>역변환과 보정</h2></header>
 <div class="sbody two"><div class="lcol">
 <p>log(X<sub>t</sub>) = f(t) + ε<sub>t</sub>에서 E(ε<sub>t</sub>) = 0이므로 log(X<sub>t</sub>)의 예측은 f̂(t)다. 그러나 X<sub>t</sub> = e<sup>f(t)+ε<sub>t</sub></sup> = e<sup>f(t)</sup>e<sup>ε<sub>t</sub></sup>이고, ε<sub>t</sub> ~ N(0, σ²)일 때 E(e<sup>ε<sub>t</sub></sup>) = e<sup>σ²/2</sup> ≠ 1이라 X̂<sub>t</sub> = e<sup>f̂(t)</sup>로는 모자란다. 그래서 X̂<sub>t</sub> = e<sup>f̂(t)</sup>e<sup>ε̂<sub>t</sub></sup>로 보정한다.</p>
-<div class="cell" id="cell-u8_back" data-cell="u8_back"><div class="chead"><span class="ctitle">원래 단위로 되돌리기</span><span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="cneeds">앞 셀: <a data-goto-cell="u7_trend">직선 추세</a> <span class="nu">[U7]</span> · <a data-goto-cell="u8_gls">GLS 최종모형</a> · <a data-goto-cell="u8_pred">회귀모형 기반 예측</a></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="9" aria-label="R 코드: 원래 단위로 되돌리기">library(nlme)
+<div class="cell" id="cell-u8_back" data-cell="u8_back"><div class="chead"><span class="ctitle">원래 단위로 되돌리기</span><span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="cneeds">앞 셀: <a data-goto-cell="u7_trend">직선 추세</a> <span class="nu">[U7]</span> · <a data-goto-cell="u8_gls">GLS 최종모형</a> · <a data-goto-cell="u8_pred">회귀모형 기반 예측</a></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="9" aria-label="R 코드: 원래 단위로 되돌리기">library(nlme)
 X_pred &lt;- exp(pred)                   # 보정 없이 역변환
 X_pred &lt;- ts(X_pred, st=c(53,1), fr=7)
 cr &lt;- mean(exp(trd.gls$res))          # 보정계수 (1/n)Σ e^{r_t}
@@ -1190,7 +1191,7 @@ lines(X_pred_cr, col=&quot;blue&quot;)</textarea></div><div class="cstatus" aria
 </div>
 <p class="note"><code>cr &lt;- mean(exp(trd.gls$res))</code>가 보정계수(correction term) e<sup>ε̂<sub>t</sub></sup> = (1/n)Σ<sub>t=1</sub><sup>n</sup> e<sup>r<sub>t</sub></sup>(r<sub>t</sub>는 잔차)이고, <code>exp(pred)*cr</code>가 X̂<sub>t</sub> = e<sup>f̂(t)</sup>e<sup>ε̂<sub>t</sub></sup>다.</p>
 <p class="note">그림의 빨간 점선이 보정 없이 역변환한 <code>X_pred</code>, 파란 실선이 보정한 <code>X_pred_cr</code>다. cr가 1보다 크면 파란 선이 빨간 선 위에 있다.</p>
-<details class="more"><summary>e<sup>σ²/2</sup>와 견주면</summary><div class="morebody"><p>ε<sub>t</sub> ~ N(0, σ²)이면 E(e<sup>ε<sub>t</sub></sup>) = e<sup>σ²/2</sup>다. σ² 자리에 잔차의 분산을 넣어 cr와 견준다.</p><div class="cell" id="cell-u8_corr" data-cell="u8_corr"><div class="chead"><span class="ctitle">보정계수 cr와 e<sup>σ²/2</sup></span><span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="cneeds">앞 셀: <a data-goto-cell="u8_gls">GLS 최종모형</a> · <a data-goto-cell="u8_back">원래 단위로 되돌리기</a></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="3" aria-label="R 코드: 보정계수 cr와 eσ²/2">library(nlme)
+<details class="more"><summary>e<sup>σ²/2</sup>와 견주면</summary><div class="morebody"><p>ε<sub>t</sub> ~ N(0, σ²)이면 E(e<sup>ε<sub>t</sub></sup>) = e<sup>σ²/2</sup>다. σ² 자리에 잔차의 분산을 넣어 cr와 견준다.</p><div class="cell" id="cell-u8_corr" data-cell="u8_corr"><div class="chead"><span class="ctitle">보정계수 cr와 e<sup>σ²/2</sup></span><span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button><button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div><div class="cneeds">앞 셀: <a data-goto-cell="u8_gls">GLS 최종모형</a> · <a data-goto-cell="u8_back">원래 단위로 되돌리기</a></div><div class="editor"><pre class="hl" aria-hidden="true"></pre><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" rows="3" aria-label="R 코드: 보정계수 cr와 eσ²/2">library(nlme)
 exp(sd(trd.gls$res)^2/2)        # σ² 자리에 잔차의 분산
 cr                              # mean(exp(trd.gls$res))</textarea></div><div class="cstatus" aria-live="polite"></div><div class="out"></div></div><p class="note">cr는 잔차로 직접 구한 (1/n)Σe<sup>r<sub>t</sub></sup>이고, e<sup>σ²/2</sup>는 ε<sub>t</sub>가 정규분포라고 가정한 식이라 똑같지는 않다.</p></div></details>
 </div></div>
@@ -1198,16 +1199,16 @@ cr                              # mean(exp(trd.gls$res))</textarea></div><div cl
 <section class="slide wrap one" id="s-U8-9" data-unit="U8" data-key="U8-9" data-title="정리 · 보정과 예측" data-ref="강의 5장 p.23–29" hidden>
 <header class="shead"><div class="sunit">U8 보정과 예측</div><h2><span class="pre">정리 · </span>보정과 예측</h2></header>
 <div class="sbody one">
-<p>보정과 예측의 원리와 주 자료에서 확인한 것.</p>
-<ul><li>잠정모형의 잔차는 정상시계열이어도 서로 독립이 아닐 수 있어, ACF·PACF로 AR 차수를 정해 잔차가 WN이 될 때까지 모형화한다. 주 자료의 직선 모형 잔차는 ACF가 시차 7·14·21(일)마다 봉우리이고 PACF는 시차 1(약 0.48)이 커서, 계절 항이 없으면 요일 주기가 잔차에 남는다.</li><li>AR을 적합한 뒤의 잔차 r1이 WN이 아니면 차수를 바꾸거나 잠정모형을 다시 본다. 추가한 계수가 유의하지 않고 ACF의 봉우리가 주기(시차 7·14·21)에 남으면 차수가 아니라 잠정모형의 문제다. 주 자료는 직선 모형 잔차에 AR(2)를 적합해도 r1의 ACF가 시차 7·14·21에서 점선 밖(약 0.48, 0.32, 0.24)이고 ar2(약 −0.09)는 유의하지 않아, 계절 항이 있는 잠정모형으로 간다.</li><li>차수는 PACF가 절단되는 시차로 정하고, 적합 뒤 r1의 ACF·PACF가 점선 안이면 WN으로 본다. 주 자료의 log·계절 항 잠정모형은 잔차의 ACF가 지수적으로 줄고 PACF가 시차 1(약 0.64)만 크며 7일 봉우리가 없어 AR(1)(ar1 ≈ 0.65)이다. 적합 뒤의 r1은 시차 4·20만 살짝 넘어 WN으로 보고 GLS에 넘긴다.</li><li>오차항이 독립이 아니면 잔차의 AR 구조를 넣은 GLS가 OLS보다 효율적이고 이것이 최종모형이다. 주 자료는 Phi ≈ 0.66이고 <code>I(time_st^2)</code>의 p-value가 0.1567로 OLS(약 0.0093)와 달리 0.05보다 커서, 2차 항은 최종모형에서 다시 볼 항이다.</li><li>회귀모형 기반 예측은 새 시점의 설명변수 <code>new.X</code>로 한다. 주 자료의 다음 2주는 보정한 예측값이 월요일 약 312만 건에서 토요일 약 126만 건까지 내려가는 7일 모양을 두 번 반복하고, 두 주의 수준은 거의 같다.</li><li>log 모형의 예측값 e<sup>f̂(t)</sup>는 E(e<sup>ε<sub>t</sub></sup>) ≠ 1이라 보정계수 cr = (1/n)Σe<sup>r<sub>t</sub></sup>를 곱해 역변환한다. 주 자료는 cr ≈ 1.0718로 1보다 커서 보정한 예측값이 약 7% 위에 있고, 정규분포를 가정한 e<sup>σ²/2</sup> ≈ 1.0752와 비슷하지만 같지는 않다.</li></ul>
-<p>주 자료의 모형화는 여기서 끝난다.</p>
+<p>보정과 예측의 원리.</p>
+<ul><li>잠정모형의 잔차는 정상이어도 서로 독립이 아닐 수 있다. 잔차의 ACF·PACF로 AR 차수를 정해 적합하고, 그 잔차가 백색잡음이 될 때까지 모형화한다.</li><li>AR을 적합한 뒤에도 ACF의 봉우리가 주기 길이의 시차마다 남으면 차수가 아니라 잠정모형의 문제다. 계절 항을 넣은 잠정모형으로 돌아간다.</li><li>오차항이 i.i.d.면 OLS가 BLUE지만, 독립이 아니면 오차의 AR 구조를 넣은 GLS가 더 효율적이다. GLS는 오차항에 대한 정보(차수와 φ̂)가 필요하고, 이것이 최종모형이다. GLS에서 유의하지 않게 된 항은 다시 본다.</li><li>회귀모형 기반 예측은 예측 시점의 설명변수 값 <code>new.X</code>로 한다. 추세항은 학습 자료의 평균·표준편차로 표준화하고, 계절항은 새 시점에서 같은 주기를 만든다.</li><li>log 모형의 예측값 e<sup>f̂(t)</sup>는 E(e<sup>ε<sub>t</sub></sup>) ≠ 1이라 보정계수 cr = (1/n)Σe<sup>r<sub>t</sub></sup>를 곱해 역변환한다. ε<sub>t</sub>가 정규분포면 e<sup>σ²/2</sup>와 비슷하다.</li><li>모형화는 자료를 가장 잘 설명하는 모형을 고르는 작업이고, 정답인 모형은 하나가 아니다.</li></ul>
+<p>회귀 경로의 모형화는 여기서 끝난다.</p>
 </div>
 </section>
 <section class="slide wrap one" id="s-U8-10" data-unit="U8" data-key="U8-10" data-title="정리 · 전체 흐름" data-ref="강의 2장 p.19, 4장 p.41" hidden>
 <header class="shead"><div class="sunit">U8 보정과 예측</div><h2><span class="pre">정리 · </span>전체 흐름</h2></header>
 <div class="sbody one">
-<p>U1–U8이 주 자료에 한 일과 QQQ가 회귀로 가지 않은 이유.</p>
-<ul><li>그려 읽기 → 분해 → 평활 (U1–U3): 주 자료는 6주째 고점 뒤 감소하는 추세, 토·일이 낮은 요일 주기, 수준이 높을 때 커지는 변동폭을 보였다. 승법 분해가 맞았고, 평활법 중에서는 추세와 요일 주기를 함께 갱신하는 Holt-Winters가 맞았다.</li><li>정상성 판정 (U4): KPSS(trend)를 기각하지 못하고 ADF가 단위근을 기각해 결정적 추세로 판정했다. 이 갈림길에서 주 자료는 회귀모형으로 갔다.</li><li>모형의 재료 → AR 모형화 (U5–U6): 백색잡음·확률보행·AR을 알고, 주간 평균에 AR을 식별·추정·진단·예측했다. 추세가 있어 근사적 적합이었다.</li><li>회귀 → 보정과 예측 (U7–U8): log 변환한 추세·계절 회귀의 잠정모형, 잔차의 AR(1)을 넣은 GLS 최종모형, 보정계수 cr로 역변환한 다음 2주 예측이다.</li><li>QQQ는 ADF가 단위근을 기각하지 못하는 확률적 추세라(U4) AR(1)의 φ̂ = 0.9798로 경계에 있고(U6), log 변환도 추세를 없애지 못한다(U7). 회귀가 아니라 ARIMA 모형의 경로이고, 이 교재에서는 다루지 않는다.</li></ul>
+<p>시계열분석의 흐름.</p>
+<ul><li>그려 읽기: 그림에서 추세, 계절성, 변동의 증가, 추세의 성격을 읽는다. 관찰된 특징을 모두 반영하는 모형을 고려한다.</li><li>성분 나누기와 평활: 분해법으로 구조를 이해하고, 평활법으로 다음 값을 바로 예측한다.</li><li>정상성 판정: 그림·ACF·단위근 검정으로 정상인지, 비정상이면 결정적 추세인지 확률적 추세인지 가른다. 이 갈림길이 모형을 정한다.</li><li>모형의 재료와 AR 모형화: 백색잡음·확률보행·AR을 알고, 정상 자료에는 식별·추정·진단·예측의 3단계를 적용한다.</li><li>회귀와 보정: 결정적 추세는 추세·계절 회귀로 잔차를 정상으로 만들고, 잔차의 AR 구조를 GLS에 넣어 최종모형을 만든 뒤, 변환한 모형은 보정해 역변환한다.</li><li>확률적 추세: 변환으로 없어지지 않으며, 차분을 쓰는 ARIMA 모형의 경로다.</li></ul>
 <p>모형화는 자료를 가장 잘 설명하는 모형을 고르는 작업이고 정답인 모형은 하나가 아니다.</p>
 </div>
 </section>
@@ -1221,7 +1222,8 @@ cr                              # mean(exp(trd.gls$res))</textarea></div><div cl
 <h2>사용법</h2>
 <div class="tblwrap"><table class="t"><thead><tr><th>무엇</th><th>어떻게</th></tr></thead><tbody>
 <tr><td>R 준비</td><td>페이지를 열면 브라우저 안에서 R(webR)을 준비한다 (10–30초, 인터넷 필요). 오른쪽 위가 'R 준비됨'으로 바뀌면 셀을 실행할 수 있다.</td></tr>
-<tr><td>셀 실행</td><td>셀의 ▶ 실행 단추, 또는 코드 상자 안에서 Ctrl+Enter (Mac은 ⌘+Enter). 결과와 그림은 오른쪽 결과 칸에 나온다.</td></tr>
+<tr><td>셀 실행</td><td>셀의 ▶ 실행 단추, 또는 코드 상자 안에서 Ctrl+Shift+Enter (Mac은 ⌘+Shift+Enter). 결과와 그림은 오른쪽 결과 칸에 나온다.</td></tr>
+<tr><td>부분 실행</td><td>RStudio처럼, 코드 상자에서 드래그해 고른 부분만 Ctrl+Enter (Mac은 ⌘+Enter)로 실행한다. 고른 것이 없으면 커서가 있는 줄(여러 줄짜리 식이면 괄호가 닫힐 때까지)을 실행하고 다음 줄로 내려간다. 결과는 결과 칸에 이어 붙는다.</td></tr>
 <tr><td>바꿔 보기</td><td><code># 바꿔 보기</code>라고 적힌 줄의 값만 바꿔 다시 실행한다. ↺ 단추는 코드를 처음 상태로 되돌린다.</td></tr>
 <tr><td>자료</td><td><code>TRD</code>(주 자료)와 <code>QQQ</code>(대조 자료)는 R을 준비할 때 미리 읽혀 있다. 어떤 화면에서든 바로 쓸 수 있다.</td></tr>
 <tr><td>앞 셀</td><td>모든 셀은 R 세션 하나를 같이 쓴다. 앞 셀이 만든 변수를 쓰는 셀을 먼저 누르면 필요한 앞 셀을 자동으로 먼저 실행하고, 그 사실을 출력 맨 위에 적는다.</td></tr>
@@ -2784,6 +2786,43 @@ function highlightR(code) {
   return out + '\n';
 }
 
+// 괄호 균형: 문자열·주석을 빼고 ( [ { 와 ) ] } 의 차이를 센다
+function bracketDepth(code) {
+  let depth = 0;
+  let i = 0;
+  while (i < code.length) {
+    const ch = code[i];
+    if (ch === '#') { const j = code.indexOf('\n', i); i = j < 0 ? code.length : j; continue; }
+    if (ch === '"' || ch === "'") {
+      let j = i + 1;
+      while (j < code.length && code[j] !== ch) j += code[j] === '\\' ? 2 : 1;
+      i = j + 1;
+      continue;
+    }
+    if (ch === '(' || ch === '[' || ch === '{') depth += 1;
+    else if (ch === ')' || ch === ']' || ch === '}') depth -= 1;
+    i += 1;
+  }
+  return depth;
+}
+// Ctrl+Enter 가 실행할 코드: 선택 영역(줄 단위로 넓힘) 또는 현재 줄(괄호가 닫힐 때까지 아래로 넓힘)
+function selectionCode(ta) {
+  const v = ta.value;
+  const hadSelection = ta.selectionStart !== ta.selectionEnd;
+  let from = v.lastIndexOf('\n', ta.selectionStart - 1) + 1;
+  let to = v.indexOf('\n', Math.max(ta.selectionEnd - (hadSelection ? 1 : 0), ta.selectionStart));
+  if (to < 0) to = v.length;
+  if (!hadSelection) {
+    while (bracketDepth(v.slice(from, to)) > 0 && to < v.length) {
+      const nextNl = v.indexOf('\n', to + 1);
+      to = nextNl < 0 ? v.length : nextNl;
+    }
+  }
+  const code = v.slice(from, to);
+  const lines = code.split('\n').length;
+  return { code, from, to, hadSelection, label: hadSelection ? '선택 영역' : (lines > 1 ? `현재 식 (${lines}줄)` : '현재 줄') };
+}
+
 const editorDone = new WeakSet();
 function initEditor(el) {
   const ta = $('textarea.code', el);
@@ -2794,7 +2833,16 @@ function initEditor(el) {
     ta.addEventListener('input', () => { pre.innerHTML = highlightR(ta.value); sizeEditor(el); });
     ta.addEventListener('scroll', () => { pre.scrollLeft = ta.scrollLeft; pre.scrollTop = ta.scrollTop; });
     ta.addEventListener('keydown', e => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); requestRun(el.dataset.cell); }
+      if (!(e.ctrlKey || e.metaKey) || e.key !== 'Enter') return;
+      e.preventDefault();
+      if (e.shiftKey) { requestRun(el.dataset.cell); return; }
+      const sel = selectionCode(ta);
+      requestRun(el.dataset.cell, { code: sel.code, partial: true, label: sel.label });
+      if (!sel.hadSelection) {
+        // RStudio처럼 다음 줄로 커서를 옮긴다
+        const next = Math.min(ta.value.length, sel.to + 1);
+        ta.setSelectionRange(next, next);
+      }
     });
     pre.innerHTML = highlightR(ta.value);
   }
@@ -2994,17 +3042,18 @@ function enqueue(fn) {
 }
 function setCellStatus(id, html) { const el = cellEl(id); if (el) $('.cstatus', el).innerHTML = html; }
 
-function requestRun(id) {
+function requestRun(id, opts = {}) {
   const el = cellEl(id);
   if (!el) return;
   const btn = $('.run', el);
   if (btn.disabled) return;
+  if (opts.partial && !opts.code.trim()) return;
   btn.disabled = true;
   setCellStatus(id, '대기 중…');
-  enqueue(() => runWithDeps(id)).finally(() => { btn.disabled = false; });
+  enqueue(() => runWithDeps(id, opts)).finally(() => { btn.disabled = false; });
 }
 
-async function runWithDeps(id) {
+async function runWithDeps(id, opts = {}) {
   if (!rReady) {
     setCellStatus(id, 'R 준비를 기다리는 중… (오른쪽 위 표시)');
     try { await rReadyPromise; } catch (e) {
@@ -3025,15 +3074,19 @@ async function runWithDeps(id) {
     }
     done.push(d);
   }
-  return await runOne(id, { before: done });
+  return await runOne(id, { before: done, code: opts.code, partial: opts.partial, label: opts.label });
 }
 
 async function runOne(id, opts = {}) {
   const m = CELLS[id];
   const el = cellEl(id);
-  const code = $('textarea.code', el).value;
+  const code = opts.partial ? opts.code : $('textarea.code', el).value;
   const out = outEl(id);
-  out.innerHTML = '';
+  if (opts.partial) {
+    if (out.children.length) out.insertAdjacentHTML('beforeend', '<div class="osep"></div>');
+  } else {
+    out.innerHTML = '';
+  }
   const slot = out.closest('.oslot');
   if (slot) { const h = $('.ohint', slot); if (h) h.hidden = true; }
   if (opts.before && opts.before.length) {
@@ -3075,10 +3128,15 @@ async function runOne(id, opts = {}) {
     setStatus('ready', 'R 준비됨');
   }
   const text = renderOutput(out, items, images, m);
-  if (slot && !opts.autoFor) slot.scrollIntoView({ block: 'start' });
+  if (slot && !opts.autoFor) {
+    if (opts.partial) { const last = out.lastElementChild; if (last) last.scrollIntoView({ block: 'nearest' }); }
+    else slot.scrollIntoView({ block: 'start' });
+  }
   const secs = ((performance.now() - t0) / 1000).toFixed(1);
-  setCellStatus(id, ok ? `<span class="okmark">✓</span> 완료 · ${secs}초` : `<span class="err">오류</span> · ${secs}초`);
+  const what = opts.partial ? (opts.label || '선택 영역') + ' 실행' : '완료';
+  setCellStatus(id, ok ? `<span class="okmark">✓</span> ${what} · ${secs}초` : `<span class="err">오류</span> · ${what} · ${secs}초`);
   if (!ok) addHints(id, out, text, pkgFail);
+  if (opts.partial) return ok;          // 부분 실행은 셀 상태(완료 여부·변수 출처)를 바꾸지 않는다
 
   state.seq += 1;
   for (const v of m.defs) { state.lastWriter[v] = id; state.writeAt[v] = state.seq; }
@@ -3263,7 +3321,7 @@ $('#help').addEventListener('click', e => { if (e.target.id === 'help') e.target
 show(startIndex());
 rReadyPromise = startR();
 rReadyPromise.catch(() => {});
-window.__deck = { show, state, planFor, runWithDeps, ensurePackages, get webR() { return webR; }, get ready() { return rReady; } };
+window.__deck = { show, state, planFor, runWithDeps, ensurePackages, selectionCode, bracketDepth, get webR() { return webR; }, get ready() { return rReady; } };
 
 </script>
 </body>

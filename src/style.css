@@ -182,6 +182,7 @@ details.more > summary:hover { color: var(--ink); }
 .out:empty { display: none; }
 .cell .out { margin: 0 12px 12px; }
 .out { display: flex; flex-direction: column; gap: 8px; }
+.out .osep { border-top: 1px dashed var(--rule); margin: 4px 0; }
 .out .pre-note { font-size: .8em; color: var(--muted); background: var(--soft); border-radius: 3px; padding: 5px 10px; }
 .out .pre-note a { cursor: pointer; }
 pre.console {

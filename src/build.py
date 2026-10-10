@@ -620,7 +620,7 @@ class Renderer:
         return (
             f'<div class="cell" id="cell-{c["id"]}" data-cell="{c["id"]}">'
             f'<div class="chead"><span class="ctitle">{inline(c["title"])}</span>'
-            f'<span class="cbtns"><button type="button" class="btn run" title="실행 (Ctrl+Enter / ⌘+Enter)">▶ 실행</button>'
+            f'<span class="cbtns"><button type="button" class="btn run" title="셀 전체 실행 (Ctrl+Shift+Enter). 코드 상자에서 Ctrl+Enter는 선택 영역 또는 현재 줄만 실행">▶ 실행</button>'
             f'<button type="button" class="btn reset" title="코드를 처음 상태로 되돌리기" aria-label="코드 되돌리기">↺</button></span></div>'
             f'{needs}'
             f'<div class="editor"><pre class="hl" aria-hidden="true"></pre>'

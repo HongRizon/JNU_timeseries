@@ -156,6 +156,43 @@ function highlightR(code) {
   return out + '\n';
 }
 
+// 괄호 균형: 문자열·주석을 빼고 ( [ { 와 ) ] } 의 차이를 센다
+function bracketDepth(code) {
+  let depth = 0;
+  let i = 0;
+  while (i < code.length) {
+    const ch = code[i];
+    if (ch === '#') { const j = code.indexOf('\n', i); i = j < 0 ? code.length : j; continue; }
+    if (ch === '"' || ch === "'") {
+      let j = i + 1;
+      while (j < code.length && code[j] !== ch) j += code[j] === '\\' ? 2 : 1;
+      i = j + 1;
+      continue;
+    }
+    if (ch === '(' || ch === '[' || ch === '{') depth += 1;
+    else if (ch === ')' || ch === ']' || ch === '}') depth -= 1;
+    i += 1;
+  }
+  return depth;
+}
+// Ctrl+Enter 가 실행할 코드: 선택 영역(줄 단위로 넓힘) 또는 현재 줄(괄호가 닫힐 때까지 아래로 넓힘)
+function selectionCode(ta) {
+  const v = ta.value;
+  const hadSelection = ta.selectionStart !== ta.selectionEnd;
+  let from = v.lastIndexOf('\n', ta.selectionStart - 1) + 1;
+  let to = v.indexOf('\n', Math.max(ta.selectionEnd - (hadSelection ? 1 : 0), ta.selectionStart));
+  if (to < 0) to = v.length;
+  if (!hadSelection) {
+    while (bracketDepth(v.slice(from, to)) > 0 && to < v.length) {
+      const nextNl = v.indexOf('\n', to + 1);
+      to = nextNl < 0 ? v.length : nextNl;
+    }
+  }
+  const code = v.slice(from, to);
+  const lines = code.split('\n').length;
+  return { code, from, to, hadSelection, label: hadSelection ? '선택 영역' : (lines > 1 ? `현재 식 (${lines}줄)` : '현재 줄') };
+}
+
 const editorDone = new WeakSet();
 function initEditor(el) {
   const ta = $('textarea.code', el);
@@ -166,7 +203,16 @@ function initEditor(el) {
     ta.addEventListener('input', () => { pre.innerHTML = highlightR(ta.value); sizeEditor(el); });
     ta.addEventListener('scroll', () => { pre.scrollLeft = ta.scrollLeft; pre.scrollTop = ta.scrollTop; });
     ta.addEventListener('keydown', e => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); requestRun(el.dataset.cell); }
+      if (!(e.ctrlKey || e.metaKey) || e.key !== 'Enter') return;
+      e.preventDefault();
+      if (e.shiftKey) { requestRun(el.dataset.cell); return; }
+      const sel = selectionCode(ta);
+      requestRun(el.dataset.cell, { code: sel.code, partial: true, label: sel.label });
+      if (!sel.hadSelection) {
+        // RStudio처럼 다음 줄로 커서를 옮긴다
+        const next = Math.min(ta.value.length, sel.to + 1);
+        ta.setSelectionRange(next, next);
+      }
     });
     pre.innerHTML = highlightR(ta.value);
   }
@@ -366,17 +412,18 @@ function enqueue(fn) {
 }
 function setCellStatus(id, html) { const el = cellEl(id); if (el) $('.cstatus', el).innerHTML = html; }
 
-function requestRun(id) {
+function requestRun(id, opts = {}) {
   const el = cellEl(id);
   if (!el) return;
   const btn = $('.run', el);
   if (btn.disabled) return;
+  if (opts.partial && !opts.code.trim()) return;
   btn.disabled = true;
   setCellStatus(id, '대기 중…');
-  enqueue(() => runWithDeps(id)).finally(() => { btn.disabled = false; });
+  enqueue(() => runWithDeps(id, opts)).finally(() => { btn.disabled = false; });
 }
 
-async function runWithDeps(id) {
+async function runWithDeps(id, opts = {}) {
   if (!rReady) {
     setCellStatus(id, 'R 준비를 기다리는 중… (오른쪽 위 표시)');
     try { await rReadyPromise; } catch (e) {
@@ -397,15 +444,19 @@ async function runWithDeps(id) {
     }
     done.push(d);
   }
-  return await runOne(id, { before: done });
+  return await runOne(id, { before: done, code: opts.code, partial: opts.partial, label: opts.label });
 }
 
 async function runOne(id, opts = {}) {
   const m = CELLS[id];
   const el = cellEl(id);
-  const code = $('textarea.code', el).value;
+  const code = opts.partial ? opts.code : $('textarea.code', el).value;
   const out = outEl(id);
-  out.innerHTML = '';
+  if (opts.partial) {
+    if (out.children.length) out.insertAdjacentHTML('beforeend', '<div class="osep"></div>');
+  } else {
+    out.innerHTML = '';
+  }
   const slot = out.closest('.oslot');
   if (slot) { const h = $('.ohint', slot); if (h) h.hidden = true; }
   if (opts.before && opts.before.length) {
@@ -447,10 +498,15 @@ async function runOne(id, opts = {}) {
     setStatus('ready', 'R 준비됨');
   }
   const text = renderOutput(out, items, images, m);
-  if (slot && !opts.autoFor) slot.scrollIntoView({ block: 'start' });
+  if (slot && !opts.autoFor) {
+    if (opts.partial) { const last = out.lastElementChild; if (last) last.scrollIntoView({ block: 'nearest' }); }
+    else slot.scrollIntoView({ block: 'start' });
+  }
   const secs = ((performance.now() - t0) / 1000).toFixed(1);
-  setCellStatus(id, ok ? `<span class="okmark">✓</span> 완료 · ${secs}초` : `<span class="err">오류</span> · ${secs}초`);
+  const what = opts.partial ? (opts.label || '선택 영역') + ' 실행' : '완료';
+  setCellStatus(id, ok ? `<span class="okmark">✓</span> ${what} · ${secs}초` : `<span class="err">오류</span> · ${what} · ${secs}초`);
   if (!ok) addHints(id, out, text, pkgFail);
+  if (opts.partial) return ok;          // 부분 실행은 셀 상태(완료 여부·변수 출처)를 바꾸지 않는다
 
   state.seq += 1;
   for (const v of m.defs) { state.lastWriter[v] = id; state.writeAt[v] = state.seq; }
@@ -635,4 +691,4 @@ $('#help').addEventListener('click', e => { if (e.target.id === 'help') e.target
 show(startIndex());
 rReadyPromise = startR();
 rReadyPromise.catch(() => {});
-window.__deck = { show, state, planFor, runWithDeps, ensurePackages, get webR() { return webR; }, get ready() { return rReady; } };
+window.__deck = { show, state, planFor, runWithDeps, ensurePackages, selectionCode, bracketDepth, get webR() { return webR; }, get ready() { return rReady; } };
